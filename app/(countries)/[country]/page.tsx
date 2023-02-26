@@ -16,26 +16,25 @@ function CountryHome({ params: { country } }: CountryProps) {
 
 
   return (
-    <div className=' flex flex-col md:flex-row w-screen h-screen'> 
-        <div className=' w-[80%]'>
-          <img src={foundCountry?.flag} className='w-full md:w-6/12' alt={`${foundCountry?.name}'s Flag `} />
+    <div className=' flex flex-col md:flex-row md:items-center w-screen h-screen justify-center items-center'> 
+        <div className='w-[50%] min-w-[225px]'>
+          <img src={foundCountry?.flag} className='w-full m-4 rounded' alt={`${foundCountry?.name}'s Flag `} />
         </div>
-
-        <div className= 'p-4 rounded-md'>
+        <div className= 'p-4 rounded-md w-[50%] min-w-[225px] md:leading-6'>
          <ul>
-         <li className='text-black'>
+         <li className=''>
             <span className=' font-bold'>Native Name:</span> {foundCountry?.nativeName}
           </li>
-          <li className='text-black'>
+          <li className=''>
             <span className=' font-bold'>Population:</span> {foundCountry?.population}
           </li>
-          <li className='text-black'>
+          <li className=''>
             <span className=' font-bold'>Region:</span> {foundCountry?.region}
           </li>
-          <li className='text-black'>
+          <li className=''>
             <span className=' font-bold'>Capital:</span> {foundCountry?.capital}
           </li>
-          <li className='text-black'>
+          <li className=''>
             <span className=' font-bold'>Top Level Domain:</span> {foundCountry?.topLevelDomain}
           </li>
           <ul>

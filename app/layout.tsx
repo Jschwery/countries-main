@@ -9,8 +9,8 @@ export default function RootLayout({children}: {
     <html className="dark">
       <Providers>
         <body className=" dark:bg-slate-800">
-          <Header/>
-        {children}
+          <Header/>     
+            {children}
         </body>
       </Providers>
     </html>

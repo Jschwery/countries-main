@@ -1,7 +1,9 @@
 import { count } from 'console'
 import React, { Suspense } from 'react'
 import CountryLink from '../components/countryLink'
+import FilterComponent from '../components/filterComponent'
 import SearchBar from '../components/searchBar'
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton"
 
 type Props = {
   params:{
@@ -12,7 +14,6 @@ type Props = {
   searchParams:{
     q?: string
   }
-
 }
 interface Country{
   name: {
@@ -60,20 +61,21 @@ const HomePage = async ({searchParams: { q }} : Props) => {
   };
   
   
- 
   const filtered = q ? filteredCountries(q, countries) : countries;
-  filtered.forEach((c)=>{
-    console.log(c.name.common);
-  })
 
   return (
     <>
-      <div className='flex justify-between md:mx-8 md:my-4 p-2 flex-wrap flex-col  md:flex-row md:space-y-8 md:items-baseline items-center  ml-28'>
+    <div id='divWrapper' className='container mx-auto flex flex-wrap'>
+    <div className='w-full m-4 flex justify-center flex-wrap sm:justify-between items-baseline'>
         <SearchBar />
-      </div>
-      <div className="countryContainer flex flex-wrap w-screen h-screen justify-center items-center">
-        {filtered.map((country, index) => (
-          <div key={`${country.name.common}-${index}`} className="country flex w-56 h-64 flex-col bg-slate-600 md:w-40 md:h-48 rounded-md shadow-md shadow-black m-4">
+        <FilterComponent />
+    </div>
+    
+    {filtered.map((country, index) => (
+      <div className=" flex mx-auto sm:mx-0">
+        
+      <CountryLink href={`/${country.name.common}`}>
+          <div key={`${country.name.common}-${index}`} className="country flex w-56 h-64 flex-col bg-slate-600 rounded-md shadow-md shadow-black m-4 cursor-pointer">
             <div className="h-1/2 bg-gray-600 flex justify-center items-center rounded-md flex-auto">
               <img className="object-cover w-full h-full rounded-md" src={country.flags.svg || country.flags.png} alt={country.name.common} />
             </div>
@@ -95,8 +97,10 @@ const HomePage = async ({searchParams: { q }} : Props) => {
               </ul>
             </div>
           </div>
-        ))}
+      </CountryLink>
       </div>
+    ))}
+    </div>
     </>
   )
 }

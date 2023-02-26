@@ -1,9 +1,12 @@
 // components/common/MainLayout.tsx
 import React, { PropsWithChildren } from "react";
+import Providers from "../../../components/providers";
 const MainLayout = ({ children }: PropsWithChildren) => {
   return (
     <>
-      <main>{children}</main>
+      <Providers>
+        <main>{children}</main>
+      </Providers>
     </>
   );
 };
