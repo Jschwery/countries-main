@@ -10,7 +10,6 @@ const Header = () => {
     <div className='p-3 flex shadow-md md:align-middle justify-between dark:bg-slate-700 shadow-black'>
       <h2>Where in the World?</h2>
       <div className='flex items-center'>
-        
         <DarkMode/>
         <Link className=' hover:opacity-90 rounded-md p-1 text-xs self-center' href='/'>
           Home
