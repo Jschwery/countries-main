@@ -3,7 +3,6 @@ import React, { Suspense } from 'react'
 import CountryLink from '../components/countryLink'
 import FilterComponent from '../components/filterComponent'
 import SearchBar from '../components/searchBar'
-import Skeleton, { SkeletonTheme } from "react-loading-skeleton"
 
 type Props = {
   params:{
@@ -66,13 +65,13 @@ const HomePage = async ({searchParams: { q }} : Props) => {
   return (
     <>
     <div id='divWrapper' className='container mx-auto flex flex-wrap'>
-    <div className='w-full m-4 flex justify-center flex-wrap sm:justify-between items-baseline'>
+    <div className=' w-[80%] mx-auto flex justify-center flex-wrap sm:justify-between items-baseline search-filter search-filter-md'>
         <SearchBar />
         <FilterComponent />
     </div>
     
     {filtered.map((country, index) => (
-      <div className=" flex mx-auto sm:mx-0">
+      <div className=" flex mx-auto card-center">
         
       <CountryLink href={`/${country.name.common}`}>
           <div key={`${country.name.common}-${index}`} className="country flex w-56 h-64 flex-col bg-slate-600 rounded-md shadow-md shadow-black m-4 cursor-pointer">

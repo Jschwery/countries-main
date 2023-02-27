@@ -11,10 +11,12 @@ export default function Search({ disabled }: { disabled?: boolean }) {
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
   const [phrase, setPhrase] = useState('');
+  const [phraseCopy, setPhraseCopy] = useState('');
 
  /*just make it a dropdown from clicking a button*/
   function handleSearch(term: string) {
     setPhrase(term);
+    setPhraseCopy(term);
     const params = new URLSearchParams(window.location.search);
     if (term) {
       params.set('q', term);
@@ -27,13 +29,17 @@ export default function Search({ disabled }: { disabled?: boolean }) {
     });
   }
 
+  function clearStates(){
+    setPhrase('');
+  }
+
   return (
     
     <div className="relative mt-5">
       <label htmlFor="search" className="sr-only">
         Search
       </label>
-      <div className=' relative bg-yellow-300'>
+      <div className=' relative bg-yellow-300' onMouseLeave={()=> clearStates()} onMouseEnter={() => setPhrase(phraseCopy)}>
       {!phrase && <MagnifyingGlassIcon className='absolute top-1/2 left-40 transform -translate-y-1/2 w-5 h-5 text-gray-400'/>
       }
         <input

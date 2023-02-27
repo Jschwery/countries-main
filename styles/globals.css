@@ -38,3 +38,22 @@ div.country:hover{
         background-color: hsl(200, 20%, 95%);
     }
   }
+
+  @media (min-width: 520px) and (max-width: 750px){
+    .search-filter{
+      justify-content: space-between;
+    }
+  }
+
+  @media (min-width: 640px){
+    .card-center{
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+
+  @media(min-width: 767px){
+    .search-filter-md{
+      width: 95%;
+    }
+  }
