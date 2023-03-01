@@ -17,11 +17,11 @@ function CountryHome({ params: { country } }: CountryProps) {
 
   return (
     <div className=' flex flex-col md:flex-row md:items-center w-screen h-screen justify-center items-center'> 
-        <div className='w-[50%] min-w-[225px]'>
+        <div className='w-[50%] min-w-[300px]'>
           <img src={foundCountry?.flag} className='w-full m-4 rounded' alt={`${foundCountry?.name}'s Flag `} />
         </div>
-        <div className= 'p-4 rounded-md w-[50%] min-w-[225px] md:leading-6'>
-         <ul>
+        <div className= 'p-4 rounded-md w-[50%] min-w-[225px] md:leading-8 md:w-[40%]'>
+         <ul id='country-cat' className='flex flex-col md: mx-auto md:p-5'>
          <li className=''>
             <span className=' font-bold'>Native Name:</span> {foundCountry?.nativeName}
           </li>
