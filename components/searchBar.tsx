@@ -33,13 +33,26 @@ export default function Search({ disabled }: { disabled?: boolean }) {
     setPhrase('');
   }
 
+  /**
+   * TODO
+   * fix links with countries containing spaces
+   * add paginate option
+   * get filters working
+   * tune layout of flags page
+   * 
+   * create oauth with google
+   * add option to like countries
+   * add a quiz
+   * add mui stats
+   */
+
   return (
     
     <div className="relative mt-5">
       <label htmlFor="search" className="sr-only">
         Search
       </label>
-      <div className=' relative bg-yellow-300' onMouseLeave={()=> clearStates()} onMouseEnter={() => setPhrase(phraseCopy)}>
+      <div className=' relative' onMouseLeave={()=> clearStates()} onMouseEnter={() => setPhrase(phraseCopy)}>
       {!phrase && <MagnifyingGlassIcon className='absolute top-1/2 left-40 transform -translate-y-1/2 w-5 h-5 text-gray-400'/>
       }
         <input

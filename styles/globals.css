@@ -39,9 +39,33 @@ div.country:hover{
     }
   }
 
+  @media (max-width: 520px){
+    .filters-column{
+     display: flex;
+     flex-direction: column;
+     
+    }
+    .filter-spacing{
+      margin-top: 10px;
+    }
+    .filters-sm{
+      position:absolute;
+      top: 40px;
+      left: 0px;
+    }
+   
+  }
+.country-info li{
+  font-size: 14px;
+}
+
   @media (min-width: 520px) and (max-width: 750px){
     .search-filter{
       justify-content: space-between;
+    }
+    .cards-sm{
+      width:17rem;
+      height: 17rem;
     }
   }
 
@@ -57,3 +81,54 @@ div.country:hover{
       width: 95%;
     }
   }
+
+  .origin-top-right {
+    transform: translate3d(0, -20px, 0);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease-out;
+  }
+  button {
+    border-color: transparent;
+    transition: border-color .65s ease-out;
+  }
+ 
+  
+  button:hover{
+    animation: rotate-border 1s ease-in-out forwards;
+    border-color: limegreen;
+    box-shadow: 10px 5px 5px black;
+  }
+  
+  button:mouseleave{
+    animation: unrotate-border .65s linear forwards;
+  }
+  
+  @keyframes rotate-border {
+    0% {
+      border-color: transparent;
+    }
+    100% {
+      border-color: limegreen;
+      box-shadow: 10px 5px 5px black;
+    }
+  }
+  
+  @keyframes unrotate-border {
+    0% {
+      border-color: limegreen;
+      box-shadow: 10px 5px 5px black;
+    }
+    100% {
+      border-color: transparent;
+    }
+  }
+  
+  /* Dropdown menu visibility and position styles */
+  .relative:hover .origin-top-right,
+  .relative:focus-within .origin-top-right {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+    visibility: visible;
+  }
+  

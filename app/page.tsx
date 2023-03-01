@@ -1,3 +1,4 @@
+import { Slider, styled } from '@mui/material'
 import { count } from 'console'
 import React, { Suspense } from 'react'
 import CountryLink from '../components/countryLink'
@@ -54,6 +55,13 @@ const HomePage = async ({searchParams: { q }} : Props) => {
   const filteredCountries = (q: string | undefined, countries: Country[]) => {
     const matchingQuery = countries.filter((country) => {
       const name = country.name.common
+      if(name.toLowerCase().includes(q?.toLocaleLowerCase()??"")){
+        console.log('match!!\n')
+        console.log(`name: ${name} || query: ${q}\n\n`)
+      }else{
+        console.log('no match!\n')
+        console.log(`name: ${name} || query: ${q}\n\n`)
+      }
       return name.toLowerCase().includes(q?.toLowerCase() ?? '');
     });
     return matchingQuery;
@@ -62,26 +70,30 @@ const HomePage = async ({searchParams: { q }} : Props) => {
   
   const filtered = q ? filteredCountries(q, countries) : countries;
 
+
   return (
     <>
     <div id='divWrapper' className='container mx-auto flex flex-wrap'>
-    <div className=' w-[80%] mx-auto flex justify-center flex-wrap sm:justify-between items-baseline search-filter search-filter-md'>
+    <div className=' w-[80%] mx-auto flex justify-center flex-wrap sm:justify-between items-baseline filters-column search-filter search-filter-md'>
         <SearchBar />
-        <FilterComponent />
+        <div className=' bg-yellow-200 flex'>
+          <FilterComponent />
+        </div>
     </div>
     
     {filtered.map((country, index) => (
       <div className=" flex mx-auto card-center">
         
-      <CountryLink href={`/${country.name.common}`}>
-          <div key={`${country.name.common}-${index}`} className="country flex w-56 h-64 flex-col bg-slate-600 rounded-md shadow-md shadow-black m-4 cursor-pointer">
+      <CountryLink href={`/${encodeURIComponent(country.name.common)}`}>
+          <div key={`${country.name.common}-${index}`} className="country flex w-56 h-64 flex-col bg-slate-600 rounded-md shadow-md shadow-black m-4 cursor-pointer cards-sm">
             <div className="h-1/2 bg-gray-600 flex justify-center items-center rounded-md flex-auto">
               <img className="object-cover w-full h-full rounded-md" src={country.flags.svg || country.flags.png} alt={country.name.common} />
             </div>
             <div className="h-1/2 flex flex-col justify-center flex-auto">
-              <h5 className="text-start pl-4 py-1 text-sm mb-1 leading-3 text-white">{country.name.common}</h5>
-              <ul className="text-start pl-4">
-                <li>
+              <h5 className="text-start pl-4 py-1 text-sm mb-1 leading-3 text-white sm:text-lg">
+                {country.name.common.length > 20 ? `${country.name.common.slice(0,20)}...` : `${country.name.common}`}</h5>
+              <ul className="country-info text-start pl-4">
+                <li className=''>
                   <span>Population:</span>
                   {country.population}
                 </li>
