@@ -1,19 +1,22 @@
 import React from 'react'
 import { countryData } from '../../../public/countryData'
 import useLocalStorage from '../../../hooks/useLocalStorage'
+import countries, { Country } from '../../page';
+import { fetchCountries } from '../../(helpers)/countryFetch';
+
 interface CountryProps{
   params:{
     country: string,
   }
-
 }
 
-
 function CountryHome({ params: { country } }: CountryProps) {
-  
-  
-  const foundCountry = countryData.find((c) => c.name === country);
 
+  console.log(country)
+
+  const foundCountry = countryData.find(
+    (c) => c.name.toLowerCase().trim().split(' ').join('+') === decodeURIComponent(country).toLowerCase()
+  );
 
   return (
     <div className=' flex flex-col md:flex-row md:items-center w-screen h-screen justify-center items-center'> 
@@ -43,31 +46,23 @@ function CountryHome({ params: { country } }: CountryProps) {
             ))}
           </ul>
           <ul>
-            {foundCountry?.languages?.map((language) => (
-              <li key={language.iso639_1}>Name: {language.name}</li>
+            {foundCountry?.languages?.map((language, index) => (
+              <li key={`${language.name}-${index}`}>Name: {language.name}</li>
             ))}
           </ul>
          </ul>
         </div>
     </div>
-//border countries need to pair with other text attributes:
-/*
-  <ul>
-            {foundCountry?.languages?.map((language) => (
-              <li key={language.iso639_1}>Name: {language.name}</li>
-            ))}
-          </ul>
-*/
   )
 }
-
+//Creates the paths for each of the countries at build time, enabling them to be statically rendered and near instant load times
 export async function generateStaticParams(){
-  return countryData.map((c) =>({
-    country: c.name,
-  }));
-
-
+  const fetchedCountries:Country[] = await fetchCountries();
+  return fetchedCountries.map((c)=>{
+    return {
+        country: c.name.common.trim().split(' ').join('+')
+    };
+  })
 }
-
 
 export default CountryHome;

@@ -1,21 +1,21 @@
 import { Slider, styled } from '@mui/material'
-import { count } from 'console'
-import React, { Suspense } from 'react'
+import React, { ReactNode, Suspense } from 'react'
 import CountryLink from '../components/countryLink'
 import FilterComponent from '../components/filterComponent'
 import SearchBar from '../components/searchBar'
+import { fetchCountries } from './(helpers)/countryFetch'
 
 type Props = {
-  params:{
+  params?:{
     countryName?: string,
     countryRegion?: string,
     paginate?: number,
   }
-  searchParams:{
-    q?: string
+  searchParams?:{
+    q: string | undefined
   }
 }
-interface Country{
+export interface Country{
   name: {
     common: string;
   }
@@ -34,60 +34,53 @@ maps?: {
 }
 }
 
-const HomePage = async ({searchParams: { q }} : Props) => {
-  console.log("q: ", q); // check if q is being passed in correctly
-  const fetchCountries = async (): Promise<any[]> => {
+const HomePage = async ({ searchParams }: Props) => {
+  const q = searchParams?.q;
+
+  
+  const getCountries = async () => {
     try {
-      const response = await fetch('https://restcountries.com/v3.1/all', {cache: 'force-cache'});
-      if (!response.ok) {
-        throw Error('could not fetch data');
-      }
-      const data = await response.json();
-      return data;
-    } catch (e: any) {
+      const countries = await fetchCountries();
+      return countries || []; // add defensive code to handle empty response
+    } catch (e) {
       console.log(e);
+      return [];
     }
-    console.log('no data fetched, returning empty array from fetchCountries')
-    return [];
   };
   
-  const countries = await fetchCountries();
+  const countries = await getCountries();
+  
   const filteredCountries = (q: string | undefined, countries: Country[]) => {
     const matchingQuery = countries.filter((country) => {
       const name = country.name.common
-      if(name.toLowerCase().includes(q?.toLocaleLowerCase()??"")){
-        console.log('match!!\n')
-        console.log(`name: ${name} || query: ${q}\n\n`)
-      }else{
-        console.log('no match!\n')
-        console.log(`name: ${name} || query: ${q}\n\n`)
+      if(name && name.toLowerCase().includes(q?.toLocaleLowerCase()??"")){
+        return true;
       }
-      return name.toLowerCase().includes(q?.toLowerCase() ?? '');
+      return false;
     });
     return matchingQuery;
   };
   
   
-  const filtered = q ? filteredCountries(q, countries) : countries;
-
+  const filtered: Country[] = q && countries ? filteredCountries(q, countries) : countries;
 
   return (
     <>
     <div id='divWrapper' className='container mx-auto flex flex-wrap'>
     <div className=' w-[80%] mx-auto flex justify-center flex-wrap sm:justify-between items-baseline filters-column search-filter search-filter-md'>
-        <SearchBar />
+        <SearchBar  />
         <div className=' bg-yellow-200 flex'>
-          <FilterComponent />
+          <FilterComponent  />
         </div>
     </div>
     
     {filtered.map((country, index) => (
       <div className=" flex mx-auto card-center">
         
-      <CountryLink href={`/${encodeURIComponent(country.name.common)}`}>
+      <CountryLink href={`/${(country.name.common.trim().split(' ').join('+'))}`}>
           <div key={`${country.name.common}-${index}`} className="country flex w-56 h-64 flex-col bg-slate-600 rounded-md shadow-md shadow-black m-4 cursor-pointer cards-sm">
             <div className="h-1/2 bg-gray-600 flex justify-center items-center rounded-md flex-auto">
-              <img className="object-cover w-full h-full rounded-md" src={country.flags.svg || country.flags.png} alt={country.name.common} />
+              <img className="object-cover w-full h-full rounded-md" src={country.flags?.svg || country.flags?.png} alt={country.name.common} />
             </div>
             <div className="h-1/2 flex flex-col justify-center flex-auto">
               <h5 className="text-start pl-4 py-1 text-sm mb-1 leading-3 text-white sm:text-lg">
@@ -111,8 +104,10 @@ const HomePage = async ({searchParams: { q }} : Props) => {
       </CountryLink>
       </div>
     ))}
+    
     </div>
     </>
-  )
+  ) 
 }
+
 export default HomePage;

@@ -5,21 +5,40 @@ import React, { useState } from 'react'
 
 function filterComponent() {
 
-  const[option, setOption] = useState('');
-
   const filterOptions = [
     { filterType: 'Population' },
     { filterType: 'Region' },
     { filterType: 'Currency' },
     { filterType: 'Borders' },
+    {filterType: 'Pagination'}
   ];
+
+  const[option, setOption] = useState(filterOptions);
+
+  console.log(option.filter((x) => x.filterType.startsWith('P'))[1].filterType);
+
+  const handleBordersClick = () => {
+    // handle click on Borders filterType
+  };
+  const handlePaginationClick = () => {
+    // handle click on Pagination filterType
+  };
+  const handlePopulationClick = () =>{
+
+  }
+  const handleCurrencyClick = () =>{
+
+  }
+  const handleRegionClick = () =>{
+    
+  }
 
   return (
 <div className="relative inline-block text-left filter-spacing">
   <button type="button" className="inline-flex justify-center w-full rounded-md border border-gray-300  hover:border-lime-600 shadow-sm px-4 py-2 dark:bg-slate-700 bg-white text-sm font-medium  hover:bg-gray-50 focus:outline-none focus:ring-2 text-white  focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500" id="menu-button" aria-expanded="true" aria-haspopup="true">
     Filters
     <svg className="-mr-1 ml-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-      <path fill-rule="evenodd" d="M10 12a1 1 0 01-.707-.293l-4-4a1 1 0 111.414-1.414L10 9.586l3.293-3.293a1 1 0 111.414 1.414l-4 4A1 1 0 0110 12z" clip-rule="evenodd" />
+      <path fillRule="evenodd" d="M10 12a1 1 0 01-.707-.293l-4-4a1 1 0 111.414-1.414L10 9.586l3.293-3.293a1 1 0 111.414 1.414l-4 4A1 1 0 0110 12z" clipRule="evenodd" />
     </svg>
   </button>
 
@@ -29,17 +48,12 @@ function filterComponent() {
       {
           <ul className="">
           {filterOptions
-            .map((option) => (
-              <li className="hover:bg-slate-700 hover:opacity-60 p-2 leading-4 text-lg cursor-pointer flex truncate">
-                {option.filterType === 'Borders' ? (
-                  <a>
-                    {option.filterType}
-                    {/*get matching*/}
-                    hello!!
+            .map((option, iteration) => (
+             
+              <li key={option.filterType+'-'+iteration} className="hover:bg-slate-700 hover:opacity-60 p-2 leading-4 text-lg cursor-pointer flex truncate">
+                  <a className=''>
+                    <span>{option.filterType}</span>
                   </a>
-                ) : (
-                  <span>{option.filterType}</span>
-                )}
               </li>
             ))}
         </ul>
