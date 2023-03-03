@@ -2,9 +2,11 @@
 
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState, useTransition } from 'react';
+import { Suspense, useState, useTransition } from 'react';
 import { countryData } from '../public/countryData';
 import CountryLink from './countryLink';
+import Image from 'next/image';
+import Loading from '../app/loading';
 
 export default function Search({ disabled }: { disabled?: boolean }) {
   const { replace } = useRouter();
@@ -72,13 +74,13 @@ export default function Search({ disabled }: { disabled?: boolean }) {
                 countryData.filter((country) => {
                   const name = country.name.toString();
                   return name.toLowerCase().includes(phrase.toLowerCase());
-                }).map((c)=>{
+                }).map((c, iteration)=>{
                   return(
                     <CountryLink href={`/${c.name}`}>
-                   <li className='hover:bg-slate-700 hover:opacity-60 p-2 leading-4 text-lg cursor-pointer flex truncate'>
-                    <img className=' rounded w-12 mr-2' src={`${c.flags.png||c.flags.svg}`}></img>
-                    <div className='truncate'>
-                      {c.name.length > 15 ? `${c.name.slice(0,20)}...` : `${c.name}`}
+                   <li key={c.name+"-"+iteration} className='hover:bg-slate-700 hover:opacity-60 p-2 leading-4 text-lg cursor-pointer h-[45px] flex align-baseline'>
+                    <Image alt='flag' width={48} height={35} className='  rounded-md px-1' src={`${c.flags.png||c.flags.svg}`}/>
+                    <div className='truncate self-center'>
+                      {c.name.length > 15 ? `${c.name.trim().slice(0,20)}...` : `${c.name}`}
                     </div>
                    </li>
                    </CountryLink>

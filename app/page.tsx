@@ -48,6 +48,9 @@ const HomePage = async ({ searchParams }: Props) => {
     }
   };
   
+//get 
+
+
   const countries = await getCountries();
   
   const filteredCountries = (q: string | undefined, countries: Country[]) => {

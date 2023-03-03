@@ -38,7 +38,14 @@ div.country:hover{
         background-color: hsl(200, 20%, 95%);
     }
   }
-
+  .fade-in {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+  }
+  .fade-in.visible {
+    opacity: 1;
+  }
+  
   @media (max-width: 520px){
     .filters-column{
      display: flex;
