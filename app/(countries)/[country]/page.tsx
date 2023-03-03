@@ -1,7 +1,7 @@
 import React from 'react'
 import { countryData } from '../../../public/countryData'
 import useLocalStorage from '../../../hooks/useLocalStorage'
-import countries, { Country } from '../../page';
+import { Country } from '../../page';
 import { fetchCountries } from '../../(helpers)/countryFetch';
 
 interface CountryProps{

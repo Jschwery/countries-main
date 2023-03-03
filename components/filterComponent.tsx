@@ -66,29 +66,29 @@ function FilterComponent() {
     const name = queue[0];
     const option = options.find((x) => x.filterType === name);
   
-    switch (option?.filterType){
-      //passing 
-      case 'Population':
-        return <MinimumDistanceSlider onChange={(numbers)=>{
+    // switch (option?.filterType){
+    //   //passing 
+    //   case 'Population':
+    //     return <MinimumDistanceSlider onChange={(numbers)=>{
            
           
-        }}
-      } />;
+    //     }}
+  //     } />;
   
-      case 'Region':
-        return <SelectAutoWidth filterType="Region"/> 
+  //     case 'Region':
+  //       return <SelectAutoWidth filterType="Region"/> 
   
-      case 'Currency':
-        return <SelectAutoWidth filterType="Currency"/> 
+  //     case 'Currency':
+  //       return <SelectAutoWidth filterType="Currency"/> 
   
-      case 'Borders':
-        return <SelectAutoWidth filterType="Borders"/> 
+  //     case 'Borders':
+  //       return <SelectAutoWidth filterType="Borders"/> 
   
-      case 'Pagination':
-        return <SelectAutoWidth filterType=""/> 
-    }
-  }
-  
+  //     case 'Pagination':
+  //       return <SelectAutoWidth filterType=""/> 
+  //   }
+  // }
+      
   return (
     <div className="flex flex-col sm:flex-row">
     {
@@ -146,5 +146,6 @@ function FilterComponent() {
     </div>
     </div>
   );
+}
 }
 export default FilterComponent;
