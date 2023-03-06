@@ -2,9 +2,9 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
-import type { RootState } from "../global/store";
+import type { RootState } from "@global/store";
 import { useSelector, useDispatch } from "react-redux";
-import { addPopulationRange, clearPopulationRange } from "../global/features/population/populationSlice"
+import { addPopulationRange, clearPopulationRange } from "@global/features/population/populationSlice"
 
 function valuetext(value: number) {
   return `${value}°C`;

@@ -1,11 +1,11 @@
 import { Slider, styled } from '@mui/material'
 import React, { ReactNode, Suspense } from 'react'
-import CountryLink from '../components/countryLink'
-import FilterComponent from '../components/filterComponent'
-import SearchBar from '../components/searchBar'
+import CountryLink from '@components/countryLink'
+import FilterComponent from '@components/filterComponent'
+import SearchBar from '@components/searchBar'
 import _ from 'lodash';
-import TablePaginationDemo from '../components/paginate'
-import { getCountries } from '../components/helpers/fetchcountries'
+import TablePaginationDemo from '@components/paginate'
+import { getCountries } from '@components/helpers/fetchcountries'
 
 type Props = {
   props?:{
@@ -36,11 +36,9 @@ maps?: {
   googleMaps?: string
 }
 }
-type ValidPropsKeys = keyof Props;
-
 
 const HomePage = async ({ searchParams, props }: Props) => {
-
+  
   //check if there is both query and props,
   //query first because it gets whole array
   const filterCheckAndApply = (q: string|undefined, props: Props['props'], countries: Country[])=>{
