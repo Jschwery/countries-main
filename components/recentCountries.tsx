@@ -2,8 +2,11 @@
 
 import React, { useEffect, useState } from 'react'
 import { fetchCountries } from './helpers/countryFetch';
+import { Country } from '@app/page';
+import { CountryHistory } from '@global/features/countryHistory/countryHistorySlice';
 
-interface CountryHistory {
+
+interface CountryName {
     name: string,
 }
 /*
@@ -19,14 +22,27 @@ interface CountryHistory {
                       {c.name.length > 15 ? `${c.name.trim().slice(0,20)}...` : `${c.name}`}
 */
 
-useEffect(()=>{
+//[countriespage] will need to set the country name into the global state
+//then it can be used by the recent countries
 
-}, [])
 
-async function RecentCountries({name}: CountryHistory) {
-    const fetchedCountries = await fetchCountries();
+async function RecentCountries({name}: CountryName) {
+  const fetchedCountries = await fetchCountries();
+  const [countries, setCountries] = useState<CountryHistory[]>([[''],['']]);
 
-    const [countries, setCountries] = useState<CountryHistory[]>([]);
+  useEffect(()=>{
+    const foundCountry: Country | undefined = fetchedCountries.find((country) =>{
+      country.name.common === name;
+      if(foundCountry){
+        setCountries([[foundCountry.name.common], [foundCountry.flags]])
+      }
+
+
+    })
+  }, [])
+
+
+
 
   return (
     <div className='flex dark:bg-slate-500 max-w-md'>

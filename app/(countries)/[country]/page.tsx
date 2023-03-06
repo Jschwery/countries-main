@@ -1,12 +1,12 @@
 import React from 'react'
-import { countryData } from '../../../public/countryData'
+import { countryData } from '@public/countryData'
 import { Country } from '../../page';
-import { fetchCountries } from '../../../components/helpers/countryFetch';
-import { RootState } from "../../../global/features/countryHistory/countryHistorySlice"
+import { fetchCountries } from '@components/helpers/countryFetch';
+import { RootState } from "@global/store"
 import { useSelector, useDispatch } from "react-redux";
-import { addPopulationRange, clearPopulationRange } from "../../../global/features/countryHistory/countryHistorySlice"
+import { addCountryHistory, clearCountryHistory } from "@global/features/countryHistory/countryHistorySlice"
+import { CountryHistory } from '@global/features/countryHistory/countryHistorySlice';
 
-RootState
 interface CountryProps{
   params:{
     country: string,
@@ -17,12 +17,18 @@ interface CountryProps{
 //state 
 
 function CountryHome({ params: { country } }: CountryProps) {
-
-  console.log(country)
-
+  const countryHistory: CountryHistory = useSelector((state: RootState ) => state.countryHistory);
+  const dispatch = useDispatch();
   const foundCountry = countryData.find(
     (c) => c.name.toLowerCase().trim().split(' ').join('+') === decodeURIComponent(country).toLowerCase()
   );
+
+  dispatch(addCountryHistory([[foundCountry?.name], [foundCountry?.flag]]));
+
+
+  console.log(country)
+
+ 
 
   return (
     <div className=' flex flex-col md:flex-row md:items-center w-screen h-screen justify-center items-center'> 
