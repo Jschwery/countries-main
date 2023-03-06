@@ -65,7 +65,9 @@ export default function Search({ disabled }: { disabled?: boolean }) {
           placeholder="Search by name..."
           spellCheck={false}
           onChange={(e) => handleSearch(e.target.value)}
-          className="h-[40px] text-xl rounded bg-transparent focus:outline-none relative"
+          className="h-[40px] mb-0 pb-0
+           text-xl rounded bg-transparent focus:outline-none relative"
+          
         />
        {phrase && (
           <div className=' absolute top-10  bg-slate-900 z-20  max-h-72 overflow-auto rounded'>

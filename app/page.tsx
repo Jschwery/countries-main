@@ -3,7 +3,9 @@ import React, { ReactNode, Suspense } from 'react'
 import CountryLink from '../components/countryLink'
 import FilterComponent from '../components/filterComponent'
 import SearchBar from '../components/searchBar'
-import { fetchCountries } from './(helpers)/countryFetch'
+import _ from 'lodash';
+import TablePaginationDemo from '../components/paginate'
+import { getCountries } from '../components/helpers/fetchcountries'
 
 type Props = {
   props?:{
@@ -11,10 +13,10 @@ type Props = {
     countryRegion?: string,
     paginate?: number,
     borders?: string[],
-    currency?: string
+    currency?: string[]
   }
   searchParams?:{
-    q: string | undefined
+    q?: string
   }
 }
 export interface Country{
@@ -28,76 +30,128 @@ export interface Country{
     png: string,
     svg: string
   }
-  currencies?: { [key: string]: object[] },
   capital?: string[],
   languages?: { [key: string]: string },
 maps?: {
   googleMaps?: string
 }
 }
+type ValidPropsKeys = keyof Props;
+
 
 const HomePage = async ({ searchParams, props }: Props) => {
 
-  const getCountries = async () => {
-    try {
-      const countries = await fetchCountries();
-      return countries || []; 
-    } catch (e) {
-      console.log(e);
-      return [];
-    }
-  };
-  
-  const countries = await getCountries();
-
-  const filteredCountries = (props: Props = {}, searchParams: Props["searchParams"] = "" || undefined, countries: Country[]) => {
-
-    
-
-
-
+  //check if there is both query and props,
+  //query first because it gets whole array
+  const filterCheckAndApply = (q: string|undefined, props: Props['props'], countries: Country[])=>{
+  let filteredCountries: Country[] = countries;
+  if (q !== undefined){
+  if (props && q.length>0) {//if there are props 
+    filteredCountries = queryFilter(filteredCountries, {q});
+    filteredCountries = filterCountries(filteredCountries, filtersPassed);
   }
+  else if(q.length > 0) {
+    filteredCountries = queryFilter(filteredCountries, {q});
+  }
+  else if (props){
+      filteredCountries = filterCountries(filteredCountries, filtersPassed);
+  }
+  if (filteredCountries.length === 0) {
+    console.log('No countries match the specified filters and query params.');
+  }
+}
+  return filteredCountries;
+}
+
+
+
+
+  type Filter = {
+    key: string,
+    filterAction: (c: Country, index?: number, countries?: Country[]) => boolean,
+  };
+
+  const filtersPassed: Filter[] = Object.keys(props || {}).reduce((filters: Filter[], key) => {
+    switch (key) {
+      case 'countryRegion':
+        filters.push({
+          key,
+          filterAction: (c: Country) => {
+            return c.region === props?.countryRegion
+          }
+        });
+        break;
+        case 'borders':
+          filters.push({
+            key,
+            filterAction: (c: Country, index?: number, countries?: Country[]) => {
+              const { borders } = props || {};//get borders from props
+              if (borders && borders.length > 0) {
+                return borders.every((border) => c.borders?.includes(border));
+              }
+              return true;
+            }
+          });
+          break;         
+      default:
+        throw new Error(`Invalid prop key: ${key}`);
+    }
+    return filters;
+  }, []);
   
   
-
-    const filtered = props && searchParams && countries ? filteredCountries(props, searchParams, countries) :
-
-    const matchingQuery = countries.filter((country) => {
-      const name = country.name.common
-      if(name && name.toLowerCase().includes(searchParams?.q?.toLocaleLowerCase()??"")){
-        return true;
-      }
-      return false;
+  /*takes array of countries, and an array of filters(functions)
+  returns a list of filtered countries based on the filters provided
+  each filter is applied to every single country via the .every() 
+  */
+  const filterCountries = (countries: Country[], filters: Filter[]): Country[] => { 
+    return _.filter(countries, (country, index) => {//takes in countries list
+      return filters.every((filter) => {//each filter applied to the countries
+        const { key, filterAction } = filter; //each filter in the array
+        switch (key) {//for each filter we will apply it on every country
+          case 'region':
+            return filterAction(country, undefined, countries);
+          case 'borders':
+            return filterAction(country, undefined, countries);
+          default:
+            return true;
+        }
+      });
     });
-    return matchingQuery;
   };
   
-  //if we have props and search params then we need to filter with both of them, else filter with whichever
-  // const filtered: Country[] = (props && searchParams && countries ? filteredCountries(props, searchParams, countries) : countries ) ?? (props || searchParams)
+    // Apply additional filter based on searchParams.q
+    const queryFilter = (filtered: Country[],searchParams?: { q: string }) => {
+      if (searchParams?.q && searchParams.q.length > 0) {
+        return filtered.filter((country) =>
+          country.name.common.toLowerCase().includes(searchParams.q.toLowerCase())
+        );
+      }
+      return filtered;
+    };
+  
+  const countriesFetched: Country[] = await getCountries()
 
-
-  // const filtered: Country[] = (searchParams?.q ?? (props?.borders || props?.countryRegion || props?.currency 
-  //   || props?.paginate !== undefined) && countries
-  //   ? filteredCountries(searchParams?.q, countries.filter((country) => 
-  //     (props?.borders ? country.borders.includes(props.borders) : true) && 
-  //     (props?.countryRegion ? country.region === props.countryRegion : true)
-  //     // add any other prop checks here
-  //   ))
-  //   : countries;
+  const countriesFiltered: Country[] = filterCheckAndApply(searchParams?.q, props, countriesFetched);
   
 
   return (
-    <>
+    <div>
     <div id='divWrapper' className='container mx-auto flex flex-wrap'>
-    <div className=' w-[80%] mx-auto flex justify-center flex-wrap sm:justify-between items-baseline 
-    filters-column search-filter search-filter-md'>
-        <SearchBar  />
-        <div className=' bg-yellow-200 flex'>
-          <FilterComponent  />
+      <div className='w-[80%] mx-auto flex justify-center flex-wrap sm:justify-between items-baseline filters-column search-filter search-filter-md mb-3'>
+        <div className='w-[255px]'>
+          <div className='flex flex-col mt-2'>
+            <SearchBar />
+          </div>
         </div>
-    </div>
-    
-    {filtered.map((country, index) => (
+        <div className='flex sm:align-middle'>
+          <FilterComponent />
+        </div>
+      </div>
+      <div className='w-full flex justify-center'>
+          <TablePaginationDemo />
+      </div>
+    {countriesFiltered.map((country, index) => (
       <div className=" flex mx-auto card-center">
         
       <CountryLink href={`/${(country.name.common.trim().split(' ').join('+'))}`}>
@@ -130,7 +184,7 @@ const HomePage = async ({ searchParams, props }: Props) => {
     ))}
     
     </div>
-    </>
+    </div>
   ) 
 }
 //countryname countryregion paginate

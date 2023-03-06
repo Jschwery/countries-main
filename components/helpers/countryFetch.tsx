@@ -1,4 +1,4 @@
-import { Country } from "../page";
+import { Country } from "../../app/page";
 
 export const fetchCountries = async (): Promise<Country[]> => {
     try {

@@ -1,14 +1,20 @@
 import React from 'react'
 import { countryData } from '../../../public/countryData'
-import useLocalStorage from '../../../hooks/useLocalStorage'
 import { Country } from '../../page';
-import { fetchCountries } from '../../(helpers)/countryFetch';
+import { fetchCountries } from '../../../components/helpers/countryFetch';
+import { RootState } from "../../../global/features/countryHistory/countryHistorySlice"
+import { useSelector, useDispatch } from "react-redux";
+import { addPopulationRange, clearPopulationRange } from "../../../global/features/countryHistory/countryHistorySlice"
 
+RootState
 interface CountryProps{
   params:{
     country: string,
   }
 }
+
+//need to get the country from the page, when clicked add it to the 
+//state 
 
 function CountryHome({ params: { country } }: CountryProps) {
 

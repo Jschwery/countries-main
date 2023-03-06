@@ -1,104 +1,123 @@
 "use client";
-
-  /*
-  need a queue, which will be initialized with a string  array[]
-  when a list object is set to active 
-
-  call function with the items name, function takes item name,
-  displays the correct slider depending on the value
-
-  each slider needs its own state
-
-  slider will be within a div, that contains an red x to close it
-  */
   
-import React, { useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import Slider from "@mui/material/Slider";
 import MinimumDistanceSlider from "./populationSlider";
 import SelectAutoWidth from "./dropdownFilter";
+import {XCircleIcon} from "@heroicons/react/24/solid";
+import { filter } from "lodash";
+import { useDispatch } from "react-redux";
+    
+  function FilterComponent() {
 
-function FilterComponent() {
-  const filterOptions = [
-    { filterType: "Population", value: "", active: false },
-    { filterType: "Region", value: "", active: false },
-    { filterType: "Currency", value: "", active: false },
-    { filterType: "Borders", value: "", active: false },
-    { filterType: "Pagination", value: "", active: false },
-  ];
-
-  const [options, setOptions] = useState(filterOptions);
-  const [queue, setQueue] = useState<string []>([])
-  const [selectedOption, setSelectedOption] = useState<JSX.Element | null>(null);
-
-  useEffect(() => {
-    console.log('selected option: '+ selectedOption)
-  }, [selectedOption]);
-
-
-  const handleSetQueue = (name: string) => {
-    if(queue.includes(name)){
-      const filteredQueue = queue.filter((items)=>{
-        return items !== name
-      })
-      setQueue(filteredQueue);
-      return filteredQueue; // Return the updated queue
+    interface FilterOption {
+      filterType: string;
+      value: string;
+      active: boolean;
     }
-    const updatedQueue = [...queue, name];
-    setQueue(updatedQueue);
-    console.log('queue: ' + updatedQueue)
-    return updatedQueue; // Return the updated queue
-  };
-  
-  const handleFilterClicked = (name: string) => {
-    const index = options.findIndex((x) => x.filterType === name);
-    if (index !== -1) {
-      const updatedOption = { ...options[index], active: !options[index].active };
-      const updatedOptions = [...options];
-      updatedOptions[index] = updatedOption;
-      setOptions(updatedOptions);
-      const updatedQueue = handleSetQueue(updatedOption.filterType);
-      setSelectedOption(showOptionSlider(updatedQueue) || null);
+    
+    interface Filter {
+      [key: string]: {
+        isActive?: boolean;
+      };
     }
-  };
+    const filterOptions: FilterOption[] = [
+      { filterType: "Population", value: "", active: false },
+      { filterType: "Region", value: "", active: false },
+      { filterType: "Borders", value: "", active: false },
+    ];
   
-  const showOptionSlider = (queue: string[]) => {
-    const name = queue[0];
-    const option = options.find((x) => x.filterType === name);
+    const [options, setOptions] = useState<FilterOption[]>(filterOptions);
+    const [queue, setQueue] = useState<string[]>([]);
+    const [selectedOption, setSelectedOption] = useState<JSX.Element | null>(null);
+    const [filterActive, setFilterActive] = useState<Filter>({});
   
-    // switch (option?.filterType){
-    //   //passing 
-    //   case 'Population':
-    //     return <MinimumDistanceSlider onChange={(numbers)=>{
-           
-          
-    //     }}
-  //     } />;
+    const handleSetQueue = (name: string) => {
+      if (queue.includes(name)) {
+        const filteredQueue = queue.filter((item) => item !== name);
+        setQueue(filteredQueue);
+        return filteredQueue;
+      }
+      const updatedQueue = [...queue, name];
+      setQueue(updatedQueue);
+      return updatedQueue;
+    };
   
-  //     case 'Region':
-  //       return <SelectAutoWidth filterType="Region"/> 
+    const handleFilterClicked = (name: string) => {
+      const index = options.findIndex((x) => x.filterType === name);
+      if (index !== -1) {
+        const updatedOption = { ...options[index], active: !options[index].active };
+        const updatedOptions = [...options];
+        updatedOptions[index] = updatedOption;
+        setOptions(updatedOptions);
+        const updatedQueue = handleSetQueue(updatedOption.filterType);
+        setSelectedOption(showOptionSlider(updatedQueue) || null);
   
-  //     case 'Currency':
-  //       return <SelectAutoWidth filterType="Currency"/> 
+        if (updatedOption.active) {
+          setFilterActive((prevState) => ({
+            ...prevState,
+            [name]: {
+              isActive: true,
+            },
+          }));
+        } else {
+          setFilterActive((prevState) => {
+            const newState = { ...prevState };
+            delete newState[name];
+            return newState;
+          });
+        }
+      }
+    };
   
-  //     case 'Borders':
-  //       return <SelectAutoWidth filterType="Borders"/> 
+    const removeActiveList = (name: string) => {
+      const removeItem = queue.filter((q) => q !== name);
+      setQueue(removeItem);
+    };
   
-  //     case 'Pagination':
-  //       return <SelectAutoWidth filterType=""/> 
-  //   }
-  // }
+    const handleHideContainer = () => {
+      setSelectedOption(null);
+      setQueue([]);
+      setFilterActive({});
+    };
+  
+    const showOptionSlider = (queue: string[]) => {
+      const name = queue[0];
+      const option = options.find((x) => x.filterType === name);
+  
+      switch (option?.filterType) {
+        case "Population":
+          return (
+            
+              <MinimumDistanceSlider />
+          );
+        case "Region":
+          return (
+            
+              <SelectAutoWidth title="Region" />
+          );
+        case "Borders":
+          return (
+              <SelectAutoWidth title="Borders" />
+          );
+        default:
+          return null;
+      }
+    };
+  
       
   return (
     <div className="flex flex-col sm:flex-row">
     {
+      
       selectedOption ? selectedOption : ''
     }
-    <div className="relative">
+    <div className="relative md:pl-2 py-4 ">
       
       <button
         type="button"
-        className="inline-flex h-[45px] justify-center rounded-md border border-gray-300 mx-2 hover:border-lime-600 shadow-sm px-4 py-2 dark:bg-slate-700 bg-white text-sm font-medium  hover:bg-gray-50 focus:outline-none focus:ring-2 text-white  focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+        className="inline-flex w-32 h-[45px] justify-center rounded-md border border-gray-300 hover:border-lime-600 shadow-sm px-4 py-2 dark:bg-slate-700 bg-white text-sm font-medium  hover:bg-gray-50 focus:outline-none focus:ring-2 text-white  focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
         id="menu-button"
         aria-expanded="true"
         aria-haspopup="true">
@@ -113,8 +132,7 @@ function FilterComponent() {
             clipRule="evenodd"/>
         </svg>
       </button>
-
-      <div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-slate-700 filters-sm z-20">
+      <div className="origin-top-right absolute right-0 mt-6 w-56 rounded-md shadow-lg bg-white dark:bg-slate-700 filters-sm z-20">
         <div
           className="py-1 transition duration-500 ease-in border-transparent hover:border-lime-500"
           role="menu"
@@ -146,6 +164,5 @@ function FilterComponent() {
     </div>
     </div>
   );
-}
-}
+};
 export default FilterComponent;

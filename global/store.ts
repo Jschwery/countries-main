@@ -1,14 +1,18 @@
+'use client';
 import { configureStore } from '@reduxjs/toolkit'
-import { borderSlice } from './slices/borders'
+import { borderSlice } from './features/border/bordersSlice'
+import {countryHistorySlice} from './features/countryHistory/countryHistorySlice';
+import {populationSlice} from './features/population/populationSlice';
+
 
 export const store = configureStore({
-    reducer: {
-      border: borderSlice.reducer,
-    },
-  });
+  reducer: {
+    countryHistory: countryHistorySlice.reducer,
+    border: borderSlice.reducer,
+    population: populationSlice.reducer,
+  },
+});
   
-
-// Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>
-// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
+
 export type AppDispatch = typeof store.dispatch

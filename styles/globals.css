@@ -40,7 +40,7 @@ div.country:hover{
   }
   .fade-in {
     opacity: 0;
-    transition: opacity 0.3s ease-in-out;
+    transition: opacity 0.2s ease-in-out;
   }
   .fade-in.visible {
     opacity: 1;
@@ -95,20 +95,20 @@ div.country:hover{
     visibility: hidden;
     transition: all 0.2s ease-out;
   }
-  button {
+  #menu-button {
     border-color: transparent;
-    transition: border-color .65s ease-out;
+    transition: border-color .3s ease-out;
   }
  
   
-  button:hover{
-    animation: rotate-border 1s ease-in-out forwards;
+  #menu-button:hover{
+    animation: rotate-border .35s ease-in-out forwards;
     border-color: limegreen;
     box-shadow: 10px 5px 5px black;
   }
   
-  button:mouseleave{
-    animation: unrotate-border .65s linear forwards;
+  #menu-button:mouseleave{
+    animation: unrotate-border .45s linear forwards;
   }
   
   @keyframes rotate-border {
