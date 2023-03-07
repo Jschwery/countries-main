@@ -62,8 +62,6 @@ const HomePage = async ({ searchParams, props }: Props) => {
 }
 
 
-
-
   type Filter = {
     key: string,
     filterAction: (c: Country, index?: number, countries?: Country[]) => boolean,

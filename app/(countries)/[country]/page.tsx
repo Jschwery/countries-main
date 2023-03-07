@@ -6,6 +6,7 @@ import { RootState } from "@global/store"
 import { useSelector, useDispatch } from "react-redux";
 import { addCountryHistory, clearCountryHistory } from "@global/features/countryHistory/countryHistorySlice"
 import { CountryHistory } from '@global/features/countryHistory/countryHistorySlice';
+import RecentCountries from '@components/recentCountries';
 
 interface CountryProps{
   params:{
@@ -22,6 +23,8 @@ function CountryHome({ params: { country } }: CountryProps) {
   const foundCountry = countryData.find(
     (c) => c.name.toLowerCase().trim().split(' ').join('+') === decodeURIComponent(country).toLowerCase()
   );
+
+  <RecentCountries name={foundCountry?.name}/>
 
   dispatch(addCountryHistory([[foundCountry?.name], [foundCountry?.flag]]));
 

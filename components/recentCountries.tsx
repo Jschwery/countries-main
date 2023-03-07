@@ -32,21 +32,22 @@ const initialState: CountryHistory = {
 }
 
 async function RecentCountries({name}: CountryName) {
-  const fetchedCountries = await fetchCountries();
   const [countries, setCountries] = useState<CountryHistory>(initialState);
 
-  useEffect(()=>{
-    const foundCountry: Country | undefined = fetchedCountries.find((country) =>{
-      country.name.common === name;
-      if(foundCountry){
-        setCountries([[foundCountry.name.common], [foundCountry.flags]])
-      }
-
-
-    })
-  }, [])
-
-
+  useEffect(() => {
+    const fetchData = async () => {
+      const fetchedCountries = await fetchCountries();
+      const foundCountry = fetchedCountries.find((country) => country.name.common === name);
+      setCountries((oldState) => [[...oldState, { value: [foundCountry.name.common, foundCountry.flags.svg] }]]);
+    };
+  
+    fetchData();
+  }, [name]);
+  
+  
+    fetchData();
+  }, [name]);
+  
 
 
   return (
