@@ -6,6 +6,7 @@ import SearchBar from '@components/searchBar'
 import _ from 'lodash';
 import TablePaginationDemo from '@components/paginate'
 import { getCountries } from '@components/helpers/fetchcountries'
+import Image from 'next/image'
 
 type Props = {
   props?:{
@@ -154,7 +155,13 @@ const HomePage = async ({ searchParams, props }: Props) => {
           <div key={`${country.name.common}-${index}`} className="country flex w-56 h-64 flex-col bg-slate-600 
           rounded-md shadow-md shadow-black m-4 cursor-pointer cards-sm">
             <div className="h-1/2 bg-gray-600 flex justify-center items-center rounded-md flex-auto">
-              <img className="object-cover w-full h-full rounded-md" src={country.flags?.svg || country.flags?.png} alt={country.name.common} />
+            <Image
+              className="object-cover w-full h-full rounded-md"
+              src={country.flags?.svg ?? country.flags?.png ?? ''}
+              alt={country.name.common}
+              width={44}
+              height={44}
+            />
             </div>
             <div className="h-1/2 flex flex-col justify-center flex-auto">
               <h5 className="text-start pl-4 py-1 text-sm mb-1 leading-3 text-white sm:text-lg">
