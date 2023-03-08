@@ -1,5 +1,5 @@
 'use client';
-function Maps() {
+function Maps(mapUrl: string) {
   return (
     <div>Maps</div>
   )
