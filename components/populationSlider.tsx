@@ -2,10 +2,6 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
-import type { RootState } from "@global/store";
-import { useSelector, useDispatch } from "react-redux";
-import { addPopulationRange, clearPopulationRange } from "@global/features/population/populationSlice"
-
 function valuetext(value: number) {
   return `${value}°C`;
 }
@@ -13,9 +9,6 @@ function valuetext(value: number) {
 const minDistance = 10;
 
 export default function MinimumDistanceSlider() {
-
-const population = useSelector((state: RootState ) => state.population);
-const dispatch = useDispatch();
 
 
   const [value2, setValue2] = React.useState<number[]>([20, 37]);
@@ -42,10 +35,6 @@ const dispatch = useDispatch();
     }
   };
 
-
-  React.useEffect(() => {
-   dispatch(addPopulationRange([value2[0], value2[1]]))
-  }, [value2]);
 
   return (
     <Box sx={{ width: 300 }}>

@@ -3,10 +3,6 @@ import React from 'react'
 import { countryData } from '@public/countryData'
 import { Country } from '../../page';
 import { fetchCountries } from '@components/helpers/countryFetch';
-import { RootState } from "@global/store"
-import { useSelector, useDispatch } from "react-redux";
-import { addCountryHistory, clearCountryHistory } from "@global/features/countryHistory/countryHistorySlice"
-import { CountryHistory } from '@global/features/countryHistory/countryHistorySlice';
 import RecentCountries from '@components/recentCountries';
 import Image from 'next/image';
 import GlobalCountries from './globalCountries';
@@ -22,9 +18,6 @@ function CountryHome({ params: { country } }: CountryProps) {
   const foundCountry = countryData.find(
     (c) => c.name.toLowerCase().trim().split(' ').join('+') === decodeURIComponent(country).toLowerCase()
   );
-  
-  // dispatch(addCountryHistory([[foundCountry?.name], [foundCountry?.flag]]));
- 
 
   return (
     <div className=' flex flex-col md:flex-row md:items-center w-screen h-screen justify-center items-center'> 

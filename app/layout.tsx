@@ -1,9 +1,8 @@
 import "../styles/globals.css";
 import Header from "@components/header";
-import { store } from "@global/store";
 import { Provider } from "react-redux";
 import ThemeProviders from "@components/providers";
-import { Providers } from "@global/provider";
+import Providers from "@components/providers";
 
 export default function RootLayout({
   children,

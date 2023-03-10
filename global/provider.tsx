@@ -1,5 +1,5 @@
 'use client';
-import {createContext,  ReactNode,  useContext, useReducer} from 'react';
+import {createContext,  ReactNode,  useContext, useEffect, useReducer} from 'react';
 import { Country } from '@app/page';
 
 type GlobalState = {
@@ -16,6 +16,8 @@ type Action =
   function globalReducer(state: GlobalState, action: Action): GlobalState {
     switch (action.type) {
       case "ADD_COUNTRY":
+        console.log("Country added to global state:", action.payload + " after payload");
+        console.log('hello')
         return {
           ...state,
           globalCountries: [...state.globalCountries, action.payload],
@@ -43,6 +45,10 @@ type Action =
 
   export const GlobalProvider = ({ children } : {children: ReactNode}) => {
     const [state, dispatch] = useReducer(globalReducer, initialState);
+
+    useEffect(() => {
+        console.log("Global state updated:", state);
+      }, [state]);
   
     return (
       <GlobalContext.Provider value={{ state, dispatch }}>
