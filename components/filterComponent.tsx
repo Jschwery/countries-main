@@ -106,11 +106,10 @@ import { useDispatch } from "react-redux";
       }
     };
   
-      
+      //one a filter is clicked, then show a checkmark at the end, and click it
   return (
-    <div className="flex flex-col sm:flex-row">
+    <div className="flex flex-col sm:flex-row  items-start sm:items-center">
     {
-      
       selectedOption ? selectedOption : ''
     }
     <div className="relative md:pl-2 py-4 ">
