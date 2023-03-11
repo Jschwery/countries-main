@@ -2,6 +2,7 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
+import { CheckIcon } from '@heroicons/react/24/solid';
 function valuetext(value: number) {
   return `${value}°C`;
 }
@@ -37,7 +38,8 @@ export default function MinimumDistanceSlider() {
 
 
   return (
-    <Box sx={{ width: 300 }}>
+    <div className='flex items-center'> 
+    <Box sx={{ width: 100%, m }}>
       <Slider
         getAriaLabel={() => 'Minimum distance shift'}
         value={value2}
@@ -47,5 +49,7 @@ export default function MinimumDistanceSlider() {
         disableSwap
       />
     </Box>
+    <CheckIcon className='checkApply w-[30px] h-[30px] text-green-600 hover:cursor-pointer pb-3'/>
+    </div>
   );
 }

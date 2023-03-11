@@ -7,6 +7,10 @@ ul li {
     font-size: 10px;
 }
 
+.checkHover{
+  @apply hover:scale-105 text-green-400
+}
+
 div.country:hover{
     transform: scale(1.05);
 }
@@ -46,7 +50,7 @@ div.country:hover{
     opacity: 1;
   }
   
-  @media (max-width: 520px){
+  @media (max-width: 555px){
     .filters-column{
      display: flex;
      flex-direction: column;
@@ -57,7 +61,7 @@ div.country:hover{
     }
     .filters-sm{
       position:absolute;
-      top: 40px;
+      top: 60px;
       left: 0px;
     }
    

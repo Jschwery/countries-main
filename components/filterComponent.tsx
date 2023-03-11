@@ -6,14 +6,13 @@ import Slider from "@mui/material/Slider";
 import MinimumDistanceSlider from "./populationSlider";
 import SelectAutoWidth from "./dropdownFilter";
 import {XCircleIcon} from "@heroicons/react/24/solid";
-import { filter } from "lodash";
-import { useDispatch } from "react-redux";
+import Check, { CheckIcon } from "@heroicons/react/24/outline"
     
   function FilterComponent() {
 
     interface FilterOption {
       filterType: string;
-      value: string;
+      value: [number, number] | string[];
       active: boolean;
     }
     
@@ -23,16 +22,67 @@ import { useDispatch } from "react-redux";
       };
     }
     const filterOptions: FilterOption[] = [
-      { filterType: "Population", value: "", active: false },
-      { filterType: "Region", value: "", active: false },
-      { filterType: "Borders", value: "", active: false },
+      { filterType: "Population", value: [0, 0], active: false },
+      { filterType: "Region", value: [''], active: false },
+      { filterType: "Borders", value: [''], active: false },
     ];
   
     const [options, setOptions] = useState<FilterOption[]>(filterOptions);
     const [queue, setQueue] = useState<string[]>([]);
     const [selectedOption, setSelectedOption] = useState<JSX.Element | null>(null);
     const [filterActive, setFilterActive] = useState<Filter>({});
-  
+    const [filterButtonShown, setFilterButtonShown] = useState(true);
+
+    //working on filtering by providing a callback function for the 
+    //
+      const handleFilterOptions = (filterName: string, bordersOrRegion?: [], population?: [number, number]) => {
+        const indexToUpdate = filterOptions.findIndex(option => 
+          option.filterType.toLocaleLowerCase() === filterName.toLocaleLowerCase()
+        );
+          
+        switch(filterName.toLocaleLowerCase()){
+          case "Population":
+          const updatedOptionPopulation = {
+            ...filterOptions[indexToUpdate],
+            value: population ?? [0,0], 
+            active: true, // set active to true for this option
+          };
+          const updatedOptionsPopulation = [
+            ...options.slice(0, indexToUpdate),
+            updatedOptionPopulation,
+            ...options.slice(indexToUpdate + 1),
+          ];
+          setOptions(updatedOptionsPopulation);
+          break;   
+          case "Region":
+          const updatedOptionRegion = {
+            ...filterOptions[indexToUpdate],
+            value: bordersOrRegion ?? [], 
+            active: true, // set active to true for this option
+          };
+          const updatedOptions = [
+            ...options.slice(0, indexToUpdate),
+            updatedOptionRegion,
+            ...options.slice(indexToUpdate + 1),
+          ];
+          setOptions(updatedOptions);
+          break;   
+          case "Border":
+          const updatedOptionBorders = {
+            ...filterOptions[indexToUpdate],
+            value: bordersOrRegion ?? [], 
+            active: true, // set active to true for this option
+          };
+          const updatedOptionsBorders = [
+            ...options.slice(0, indexToUpdate),
+            updatedOptionBorders,
+            ...options.slice(indexToUpdate + 1),
+          ];
+          setOptions(updatedOptionsBorders);
+          break;   
+        }
+      }
+      
     const handleSetQueue = (name: string) => {
       if (queue.includes(name)) {
         const filteredQueue = queue.filter((item) => item !== name);
@@ -43,9 +93,10 @@ import { useDispatch } from "react-redux";
       setQueue(updatedQueue);
       return updatedQueue;
     };
-  
+    
     const handleFilterClicked = (name: string) => {
       const index = options.findIndex((x) => x.filterType === name);
+      setFilterButtonShown(!filterButtonShown);
       if (index !== -1) {
         const updatedOption = { ...options[index], active: !options[index].active };
         const updatedOptions = [...options];
@@ -53,7 +104,6 @@ import { useDispatch } from "react-redux";
         setOptions(updatedOptions);
         const updatedQueue = handleSetQueue(updatedOption.filterType);
         setSelectedOption(showOptionSlider(updatedQueue) || null);
-  
         if (updatedOption.active) {
           setFilterActive((prevState) => ({
             ...prevState,
@@ -85,35 +135,36 @@ import { useDispatch } from "react-redux";
     const showOptionSlider = (queue: string[]) => {
       const name = queue[0];
       const option = options.find((x) => x.filterType === name);
-  
+  //these components need a callback passed
+  //
       switch (option?.filterType) {
         case "Population":
           return (
-            
               <MinimumDistanceSlider />
           );
         case "Region":
           return (
-            
-              <SelectAutoWidth title="Region" />
+            <>
+              <SelectAutoWidth callback={handleFilterOptions}  title="Region" />
+              
+            </>
           );
         case "Borders":
           return (
-              <SelectAutoWidth title="Borders" />
+              <SelectAutoWidth callback={handleFilterOptions} title="Borders" />
           );
         default:
           return null;
       }
     };
   
-      //one a filter is clicked, then show a checkmark at the end, and click it
   return (
     <div className="flex flex-col sm:flex-row  items-start sm:items-center">
     {
       selectedOption ? selectedOption : ''
     }
     <div className="relative md:pl-2 py-4 ">
-      
+    {filterButtonShown && (
       <button
         type="button"
         className="inline-flex w-32 h-[45px] justify-center rounded-md border border-gray-300 hover:border-lime-600 shadow-sm px-4 py-2 dark:bg-slate-700 bg-white text-sm font-medium  hover:bg-gray-50 focus:outline-none focus:ring-2 text-white  focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
@@ -131,7 +182,9 @@ import { useDispatch } from "react-redux";
             clipRule="evenodd"/>
         </svg>
       </button>
-      <div className="origin-top-right absolute right-0 mt-6 w-56 rounded-md shadow-lg bg-white dark:bg-slate-700 filters-sm z-20">
+    )
+  }
+      <div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-slate-700 filters-sm z-20">
         <div
           className="py-1 transition duration-500 ease-in border-transparent hover:border-lime-500"
           role="menu"
