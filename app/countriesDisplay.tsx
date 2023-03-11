@@ -10,14 +10,14 @@ import Image from 'next/image'
 function CountriesDisplay({countries}: {countries: Country[]}) {
   return (
     <div>
-    <div id='divWrapper' className='container mx-auto flex flex-wrap pt-5'>
-      <div className='w-[80%] mx-auto flex justify-center flex-wrap items-start filters-column search-filter  search-filter-md mb-3 '>
-        <div className='w-[300px] '>
+    <div className='w-full flex flex-wrap pt-5'>
+      <div className='w-[90%] flex mx-auto flex-wrap sm:items-center items-start mb-3 bg-teal-600 '>
+        <div className='w-[50%] min-w-[200px] bg-yellow-300'>
           <div className='flex flex-col mt-2'>
             <SearchBar />
           </div>
         </div>
-        <div className='flex sm:align-middle '>
+        <div className='w-[50%] min-w-[250px] bg-purple-600 flex sm:align-middle '>
           <FilterComponent />
         </div>
       </div>
@@ -25,7 +25,7 @@ function CountriesDisplay({countries}: {countries: Country[]}) {
           <TablePaginationDemo />
       </div>
     {countries.map((country, index) => (
-      <div className=" flex mx-auto card-center">
+      <div className="flex mx-auto card-center">
         
       <CountryLink href={`/${(country.name.common.trim().split(' ').join('+'))}`}>
           <div key={`${country.name.common}-${index}`} className="country flex w-56 h-64 flex-col bg-slate-600 

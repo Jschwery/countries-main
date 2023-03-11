@@ -8,6 +8,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Chip from '@mui/material/Chip';
+import { CheckIcon } from '@heroicons/react/24/solid';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -45,8 +46,12 @@ function getStyles(name: string, personName: readonly string[], theme: Theme) {
 interface ChipTypes{
   title: string;
 }
+interface ChipCheck{
+  callback:(filterName: string, bordersOrRegion?: [], population?: [number, number]) => void;
 
-export default function MultipleSelectChip({title}: ChipTypes) {
+}
+
+export default function MultipleSelectChip({title, callback}: ChipTypes & ChipCheck ) {
   const theme = useTheme();
   const [personName, setPersonName] = React.useState<string[]>([]);
 
@@ -61,7 +66,7 @@ export default function MultipleSelectChip({title}: ChipTypes) {
   };
 
   return (
-    <div>
+    <div className='relative flex items-center'>
       <FormControl sx={{width: 300, marginTop: 1}}>
         <InputLabel id="demo-multiple-chip-label">{title}</InputLabel>
         <Select
@@ -91,6 +96,7 @@ export default function MultipleSelectChip({title}: ChipTypes) {
           ))}
         </Select>
       </FormControl>
+      <CheckIcon className='w-[24px] h-[24px] text-green-400 hover:cursor-pointer' onClick={()=> callback} />
     </div>
   );
 }
