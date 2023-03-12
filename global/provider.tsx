@@ -4,6 +4,7 @@ import { Country } from '@app/page';
 
 type GlobalState = {
 globalCountries: Country[],
+
 }
 type Action =
   | { type: "ADD_COUNTRY"; payload: Country }
