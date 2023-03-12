@@ -11,17 +11,17 @@ function CountriesDisplay({countries}: {countries: Country[]}) {
   return (
     <div>
     <div className='w-full flex flex-wrap pt-5'>
-      <div className='w-[90%] flex mx-auto flex-wrap sm:items-center items-start mb-3 bg-teal-600 '>
+      <div className='w-[90%] flex mx-auto flex-wrap changeCol mb-3'>
         <div className='w-[50%] min-w-[200px] bg-yellow-300'>
-          <div className='flex flex-col mt-2'>
+          <div className='flex flex-col align-middle'>
             <SearchBar />
           </div>
         </div>
-        <div className='w-[50%] min-w-[250px] bg-purple-600 flex sm:align-middle '>
+        <div className='w-[50%] min-w-[250px] bg-purple-600 flex items-end'>
           <FilterComponent />
         </div>
       </div>
-      <div className='w-full flex justify-center'>
+      <div className='w-full flex justify-center pt-4 sm:pt-0 align-middle'>
           <TablePaginationDemo />
       </div>
     {countries.map((country, index) => (

@@ -140,18 +140,23 @@ import Check, { CheckIcon } from "@heroicons/react/24/outline"
       switch (option?.filterType) {
         case "Population":
           return (
+              <div className="flex align-middle justify-center items-center w-full bg-amber-400">
               <MinimumDistanceSlider />
+              </div>
           );
         case "Region":
           return (
-            <>
+          
+              <div className="flex align-middle justify-center items-center w-full bg-amber-400">
               <SelectAutoWidth callback={handleFilterOptions}  title="Region" />
-              
-            </>
+              </div>
+        
           );
         case "Borders":
           return (
+            <div className="flex align-middle justify-center items-center w-full bg-amber-400">
               <SelectAutoWidth callback={handleFilterOptions} title="Borders" />
+            </div>
           );
         default:
           return null;
@@ -159,15 +164,14 @@ import Check, { CheckIcon } from "@heroicons/react/24/outline"
     };
   
   return (
-    <div className="flex flex-col sm:flex-row  items-start sm:items-center">
-    {
+  <div className="flex flex-col sm:flex-row w-full justify-start sm:justify-end items-start">{
       selectedOption ? selectedOption : ''
     }
-    <div className="relative md:pl-2 py-4 ">
+    <div id="filter-button-container" className="relative md:pl-2 py-4 items-end flex">
     {filterButtonShown && (
       <button
         type="button"
-        className="inline-flex w-32 h-[45px] justify-center rounded-md border border-gray-300 hover:border-lime-600 shadow-sm px-4 py-2 dark:bg-slate-700 bg-white text-sm font-medium  hover:bg-gray-50 focus:outline-none focus:ring-2 text-white  focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+        className="inline-flex w-32 h-[45px] right-0 top-0 rounded-md border border-gray-300 hover:border-lime-600 shadow-sm px-4 py-2 dark:bg-slate-700 bg-white text-sm font-medium  hover:bg-gray-50 focus:outline-none focus:ring-2 text-white  focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
         id="menu-button"
         aria-expanded="true"
         aria-haspopup="true">

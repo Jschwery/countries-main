@@ -66,8 +66,8 @@ export default function MultipleSelectChip({title, callback}: ChipTypes & ChipCh
   };
 
   return (
-    <div className='relative flex items-center'>
-      <FormControl sx={{width: 300, marginTop: 1}}>
+    <div className='relative flex items-center w-full justify-start sm:justify-end '>
+      <FormControl sx={{ flexGrow: 1, maxWidth: '60%'}}>
         <InputLabel id="demo-multiple-chip-label">{title}</InputLabel>
         <Select
           labelId="demo-multiple-chip-label"
@@ -75,7 +75,7 @@ export default function MultipleSelectChip({title, callback}: ChipTypes & ChipCh
           multiple
           value={personName}
           onChange={handleChange}
-          input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
+          input={<OutlinedInput id="select-multiple-chip" label="Chip"/>}
           renderValue={(selected) => (
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
               {selected.map((value) => (

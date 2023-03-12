@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+@media (max-width: 641px){
+.changeCol{
+  @apply justify-center space-y-3 items-start mb-3 flex-col
+}
+#filter-button-container{
+  @apply items-start 
+}
+}
+
 ul li {
     color: #fff;
     font-size: 10px;
@@ -50,7 +59,7 @@ div.country:hover{
     opacity: 1;
   }
   
-  @media (max-width: 555px){
+  @media (max-width: 650px){
     .filters-column{
      display: flex;
      flex-direction: column;
@@ -64,8 +73,19 @@ div.country:hover{
       top: 60px;
       left: 0px;
     }
-   
   }
+  @media(min-width: 650px){
+    .filter-spacing{
+      margin-top: 11px;
+    }
+    .filters-sm{
+      position:absolute;
+      top: 60px;
+      right: 0px;
+    }
+  }
+  
+
 .country-info li{
   font-size: 14px;
 }
