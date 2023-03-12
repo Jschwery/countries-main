@@ -4,7 +4,7 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { usePathname, useRouter } from 'next/navigation';
 import { Suspense, useState, useTransition } from 'react';
 import { countryData } from '@public/countryData';
-import CountryLink from './countryLink';
+import CountryLink from '../countryLink';
 import Image from 'next/image';
 import Loading from '@app/loading';
 

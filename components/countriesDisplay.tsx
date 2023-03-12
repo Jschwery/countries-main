@@ -1,10 +1,10 @@
 'use client';
 import CountryLink from '@components/countryLink'
-import FilterComponent from '@components/filterComponent'
-import TablePaginationDemo from '@components/paginate'
-import SearchBar from '@components/searchBar'
+import FilterComponent from '@components/filters/filterComponent'
+import TablePaginationDemo from '@components/filters/paginate'
+import SearchBar from '@components/filters/searchBar'
 import React from 'react'
-import { Country } from './page'
+import { Country } from '../app/page'
 import Image from 'next/image'
 
 function CountriesDisplay({countries}: {countries: Country[]}) {

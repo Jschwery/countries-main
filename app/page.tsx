@@ -1,13 +1,13 @@
 import { Slider, styled } from '@mui/material'
 import React, { ReactNode, Suspense } from 'react'
 import CountryLink from '@components/countryLink'
-import FilterComponent from '@components/filterComponent'
-import SearchBar from '@components/searchBar'
+import FilterComponent from '@components/filters/filterComponent'
+import SearchBar from '@components/filters/searchBar'
 import _ from 'lodash';
-import TablePaginationDemo from '@components/paginate'
+import TablePaginationDemo from '@components/filters/paginate'
 import { getCountries } from '@components/helpers/fetchcountries'
 import Image from 'next/image'
-import CountriesDisplay from './countriesDisplay'
+import CountriesDisplay from '../components/countriesDisplay'
 
 type Props = {
   props?:{

@@ -9,6 +9,7 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Chip from '@mui/material/Chip';
 import { CheckIcon } from '@heroicons/react/24/solid';
+import { FilterState } from './populationSlider';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -46,12 +47,8 @@ function getStyles(name: string, personName: readonly string[], theme: Theme) {
 interface ChipTypes{
   title: string;
 }
-interface ChipCheck{
-  callback:(filterName: string, bordersOrRegion?: [], population?: [number, number]) => void;
 
-}
-
-export default function MultipleSelectChip({title, callback}: ChipTypes & ChipCheck ) {
+export default function MultipleSelectChip({title, callback}: ChipTypes & FilterState) {
   const theme = useTheme();
   const [personName, setPersonName] = React.useState<string[]>([]);
 
