@@ -7,13 +7,15 @@ import MinimumDistanceSlider from "./populationSlider";
 import SelectAutoWidth from "./dropdownFilter";
 import {XCircleIcon} from "@heroicons/react/24/solid";
 import Check, { CheckIcon } from "@heroicons/react/24/outline"
-    
+import {PencilIcon} from "@heroicons/react/24/outline";    
+
   function FilterComponent() {
 
     interface FilterOption {
       filterType: string;
       value: [number, number] | string[];
       active: boolean;
+      filterEdit?: boolean
     }
     
     interface Filter {
@@ -22,9 +24,9 @@ import Check, { CheckIcon } from "@heroicons/react/24/outline"
       };
     }
     const filterOptions: FilterOption[] = [
-      { filterType: "Population", value: [0, 0], active: false },
-      { filterType: "Region", value: [''], active: false },
-      { filterType: "Borders", value: [''], active: false },
+      { filterType: "Population", value: [0, 0], active: false, filterEdit: false },
+      { filterType: "Region", value: [''], active: false, filterEdit: false },
+      { filterType: "Borders", value: [''], active: false, filterEdit: false },
     ];
 
     useEffect(()=>{
@@ -40,9 +42,11 @@ import Check, { CheckIcon } from "@heroicons/react/24/outline"
     const [filterActive, setFilterActive] = useState<Filter>({});
     const [filterButtonShown, setFilterButtonShown] = useState(true);
 
-    //working on filtering by providing a callback function for the 
-    //
-      const handleFilterOptions = (filterName: string, bordersOrRegion?: [], population?: [number, number]) => {
+  
+      const handleFilterOptions = (filterName: string, bordersOrRegion?: [], population?: [number, number], filterEdit?: boolean) => {
+        console.log('console initiated:\n\n');
+        console.log('console initiated:\n\n');
+
         const indexToUpdate = filterOptions.findIndex(option => 
           option.filterType.toLocaleLowerCase() === filterName.toLocaleLowerCase()
         );
@@ -52,7 +56,9 @@ import Check, { CheckIcon } from "@heroicons/react/24/outline"
           const updatedOptionPopulation = {
             ...filterOptions[indexToUpdate],
             value: population ?? [0,0], 
-            active: true, // set active to true for this option
+            active: true, 
+            filterEdit: false
+            
           };
           const updatedOptionsPopulation = [
             ...options.slice(0, indexToUpdate),
@@ -65,7 +71,8 @@ import Check, { CheckIcon } from "@heroicons/react/24/outline"
           const updatedOptionRegion = {
             ...filterOptions[indexToUpdate],
             value: bordersOrRegion ?? [], 
-            active: true, // set active to true for this option
+            active: true, 
+            filterEdit: false,
           };
           const updatedOptions = [
             ...options.slice(0, indexToUpdate),
@@ -78,7 +85,8 @@ import Check, { CheckIcon } from "@heroicons/react/24/outline"
           const updatedOptionBorders = {
             ...filterOptions[indexToUpdate],
             value: bordersOrRegion ?? [], 
-            active: true, // set active to true for this option
+            active: true,
+            filterEdit: false,
           };
           const updatedOptionsBorders = [
             ...options.slice(0, indexToUpdate),
@@ -148,13 +156,13 @@ import Check, { CheckIcon } from "@heroicons/react/24/outline"
         case "Population":
           return (
               <div className="flex align-middle justify-center items-center w-full bg-amber-400">
-              <MinimumDistanceSlider callback={handleFilterOptions} />
+                <MinimumDistanceSlider callback={handleFilterOptions} />
               </div>
           );
         case "Region":
           return (
               <div className="flex align-middle justify-center items-center w-full bg-amber-400">
-              <SelectAutoWidth callback={handleFilterOptions}  title="Region" />
+                <SelectAutoWidth callback={handleFilterOptions}  title="Region" />
               </div>
         
           );
@@ -215,6 +223,16 @@ import Check, { CheckIcon } from "@heroicons/react/24/outline"
                     <div className="w-[175px]">
                       <span className=" px-1">{options.filterType}</span>
                     </div>
+                    {
+                      filterOptions.filter((filters) => filters.filterType.toLowerCase() === options.filterType.toLowerCase() && filters.filterEdit === true)
+                        .map((found, iteration) => {
+                          return (
+                            <div key={found.filterType + '-' + `${iteration}`}>
+                              <PencilIcon className=" w-[22px] h-[22px] text-yellow-300" />
+                            </div>
+                          );
+                        })
+                    }
                     {options.active ? (
                       <CheckCircleIcon className=" text-green-500 w-[25px] h-[25px]" />
                     ) : (

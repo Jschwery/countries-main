@@ -9,33 +9,21 @@ import { useGlobalContext } from '@global/provider';
 const minDistance = 10;
 
 export interface FilterState{
-  callback: (filterName: string, bordersOrRegion?: [], population?: [number, number], isEdit?: {
-    filterName: string,
-    editValue: boolean
-  }) => void;
+  callback: (filterName: string, bordersOrRegion?: [], population?: [number, number], filterEdit?: boolean) => void;
   filterName?: string;
   population?: [number, number];
-  
-  //state from the checkmark
-  //the parent needs to get the state from the checkmark
-  //the callback should also have a method that checks the value of the 
-
-
-  //if state does not save from child when going back to parent for example the sliders
-  
-  //they will need 
 }
 
-export default function MinimumDistanceSlider({filterName, population, callback}: FilterState) {
+  type HandleAnotherTest = {
+    handle: (arg: [number, number]) => void;
+  }
+  
+
+export default function MinimumDistanceSlider({handle}: HandleAnotherTest) {
 
   const handleCheckClick = (()=>{
-    const updatedIsEdit = {
-      filterName: 'population',
-      editValue: true
-    };
-    callback("population", [], [value2[0], value2[1]], updatedIsEdit);
-    
-
+    // callback("population", [], [value2[0], value2[1]], true);
+    handle([value2[0], value2[1]])
   })
 
   const [value2, setValue2] = React.useState<number[]>([0, 15]);
@@ -97,8 +85,6 @@ export default function MinimumDistanceSlider({filterName, population, callback}
     )
   }}
 />
-
-
 
     <CheckIcon onClick={handleCheckClick} className=' w-[30px] h-[30px] text-green-600 hover:text-green-400 transition-all hover:cursor-pointer pb-1 px-0.5 ml-1.5'/>
     </div>
