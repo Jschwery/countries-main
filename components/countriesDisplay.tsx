@@ -3,12 +3,17 @@ import CountryLink from '@components/countryLink'
 import FilterComponent from '@components/filters/filterComponent'
 import TablePaginationDemo from '@components/filters/paginate'
 import SearchBar from '@components/filters/searchBar'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Country } from '../app/page'
 import Image from 'next/image'
 
 function CountriesDisplay({countries}: {countries: Country[]}) {
+  const [resultCount, setResultCount] = useState(countries.length);
 
+  useEffect(() => {
+    setResultCount(countries.length);
+    console.log('countries display: '+ countries.length);
+  }, [countries]);
   return (
     <div>
     <div className='w-full flex flex-wrap pt-5'>

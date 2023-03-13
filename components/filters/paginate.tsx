@@ -9,7 +9,9 @@ export default function TablePaginationDemo({resultCount}: {resultCount: number}
   const [page, setPage] = useState(2);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  
+  React.useEffect(() => {
+    setCount(resultCount)
+  }, [resultCount]);
   
   const handleChangePage = (
     event: React.MouseEvent<HTMLButtonElement> | null,
