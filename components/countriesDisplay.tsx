@@ -8,6 +8,7 @@ import { Country } from '../app/page'
 import Image from 'next/image'
 
 function CountriesDisplay({countries}: {countries: Country[]}) {
+
   return (
     <div>
     <div className='w-full flex flex-wrap pt-5'>
@@ -22,7 +23,7 @@ function CountriesDisplay({countries}: {countries: Country[]}) {
         </div>
       </div>
       <div className='w-full flex justify-center pt-4 sm:pt-0 align-middle'>
-          <TablePaginationDemo />
+          <TablePaginationDemo resultCount={countries.length} />
       </div>
     {countries.map((country, index) => (
       <div className="flex mx-auto card-center">

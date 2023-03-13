@@ -29,12 +29,7 @@ import {PencilIcon} from "@heroicons/react/24/outline";
       { filterType: "Borders", value: [''], active: false, filterEdit: false },
     ];
 
-    useEffect(()=>{
-      filterOptions.forEach((o)=>{
-        console.log(o.filterType, " " + o.value)
-      })
-    },[filterOptions])
-
+  
   
     const [options, setOptions] = useState<FilterOption[]>(filterOptions);
     const [queue, setQueue] = useState<string[]>([]);
@@ -42,10 +37,22 @@ import {PencilIcon} from "@heroicons/react/24/outline";
     const [filterActive, setFilterActive] = useState<Filter>({});
     const [filterButtonShown, setFilterButtonShown] = useState(true);
 
+    useEffect(()=>{
+      console.log('in use effect')
+      options.forEach((o)=>{
+        console.log(o.filterType, " " + o.value)
+      })
+    },[options])
+
   
       const handleFilterOptions = (filterName: string, bordersOrRegion?: [], population?: [number, number], filterEdit?: boolean) => {
         console.log('console initiated:\n\n');
-        console.log('console initiated:\n\n');
+        console.log('filtername: '+filterName+'\n');
+        console.log('bordersregion: '+bordersOrRegion + '\n');
+        console.log('population: ' + population + '\n');
+        console.log('filteredit: '+ filterEdit+ '\n');
+        
+        
 
         const indexToUpdate = filterOptions.findIndex(option => 
           option.filterType.toLocaleLowerCase() === filterName.toLocaleLowerCase()
