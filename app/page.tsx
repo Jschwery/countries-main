@@ -7,7 +7,7 @@ import _ from 'lodash';
 import TablePaginationDemo from '@components/filters/paginate'
 import { getCountries } from '@components/helpers/fetchcountries'
 import Image from 'next/image'
-import CountriesDisplay from '../components/countriesDisplay'
+import CountriesDisplay from '@components/countriesDisplay'
 
 type Props = {
   props?:{
@@ -39,22 +39,18 @@ maps?: {
 }
 }
 
-const HomePage = async ({ searchParams, props }: Props) => {
+const HomePage = async ({ searchParams}: Props) => {
   
   //check if there is both query and props,
   //query first because it gets whole array
-  const filterCheckAndApply = (q: string|undefined, props: Props['props'], countries: Country[])=>{
+  const filterCheckAndApply = (q: string|undefined, countries: Country[])=>{
   let filteredCountries: Country[] = countries;
   if (q !== undefined){
-  if (props && q.length>0) {//if there are props 
+  if (q.length>0) {//if there are props 
     filteredCountries = queryFilter(filteredCountries, {q});
-    filteredCountries = filterCountries(filteredCountries, filtersPassed);
   }
   else if(q.length > 0) {
     filteredCountries = queryFilter(filteredCountries, {q});
-  }
-  else if (props){
-      filteredCountries = filterCountries(filteredCountries, filtersPassed);
   }
   if (filteredCountries.length === 0) {
     console.log('No countries match the specified filters and query params.');
@@ -63,61 +59,6 @@ const HomePage = async ({ searchParams, props }: Props) => {
   return filteredCountries;
 }
 
-
-  type Filter = {
-    key: string,
-    filterAction: (c: Country, index?: number, countries?: Country[]) => boolean,
-  };
-
-  const filtersPassed: Filter[] = Object.keys(props || {}).reduce((filters: Filter[], key) => {
-    switch (key) {
-      case 'countryRegion':
-        filters.push({
-          key,
-          filterAction: (c: Country) => {
-            return c.region === props?.countryRegion
-          }
-        });
-        break;
-        case 'borders':
-          filters.push({
-            key,
-            filterAction: (c: Country, index?: number, countries?: Country[]) => {
-              const { borders } = props || {};//get borders from props
-              if (borders && borders.length > 0) {
-                return borders.every((border) => c.borders?.includes(border));
-              }
-              return true;
-            }
-          });
-          break;         
-      default:
-        throw new Error(`Invalid prop key: ${key}`);
-    }
-    return filters;
-  }, []);
-  
-  
-  /*takes array of countries, and an array of filters(functions)
-  returns a list of filtered countries based on the filters provided
-  each filter is applied to every single country via the .every() 
-  */
-  const filterCountries = (countries: Country[], filters: Filter[]): Country[] => { 
-    return _.filter(countries, (country, index) => {//takes in countries list
-      return filters.every((filter) => {//each filter applied to the countries
-        const { key, filterAction } = filter; //each filter in the array
-        switch (key) {//for each filter we will apply it on every country
-          case 'region':
-            return filterAction(country, undefined, countries);
-          case 'borders':
-            return filterAction(country, undefined, countries);
-          default:
-            return true;
-        }
-      });
-    });
-  };
-  
     // Apply additional filter based on searchParams.q
     const queryFilter = (filtered: Country[],searchParams?: { q: string }) => {
       if (searchParams?.q && searchParams.q.length > 0) {
@@ -129,7 +70,7 @@ const HomePage = async ({ searchParams, props }: Props) => {
     };
   
   const countriesFetched: Country[] = await getCountries()
-  const countriesFiltered: Country[] = filterCheckAndApply(searchParams?.q, props, countriesFetched);
+  const countriesFiltered: Country[] = filterCheckAndApply(searchParams?.q, countriesFetched);
   
 
   return (

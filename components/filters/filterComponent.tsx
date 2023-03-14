@@ -24,12 +24,11 @@ import {PencilIcon} from "@heroicons/react/24/outline";
       };
     }
     const filterOptions: FilterOption[] = [
-      { filterType: "Population", value: [0, 0], active: false, filterEdit: false },
       { filterType: "Region", value: [''], active: false, filterEdit: false },
       { filterType: "Borders", value: [''], active: false, filterEdit: false },
+      { filterType: "Population", value: [0, 0], active: false, filterEdit: false },
     ];
 
-  
   
     const [options, setOptions] = useState<FilterOption[]>(filterOptions);
     const [queue, setQueue] = useState<string[]>([]);
@@ -46,20 +45,15 @@ import {PencilIcon} from "@heroicons/react/24/outline";
 
   
       const handleFilterOptions = (filterName: string, bordersOrRegion?: [], population?: [number, number], filterEdit?: boolean) => {
-        console.log('console initiated:\n\n');
-        console.log('filtername: '+filterName+'\n');
-        console.log('bordersregion: '+bordersOrRegion + '\n');
-        console.log('population: ' + population + '\n');
-        console.log('filteredit: '+ filterEdit+ '\n');
-        
-        
-
-        const indexToUpdate = filterOptions.findIndex(option => 
+     
+        const indexToUpdate = options.findIndex(option => 
           option.filterType.toLocaleLowerCase() === filterName.toLocaleLowerCase()
         );
-          
+        
         switch(filterName.toLocaleLowerCase()){
           case "Population":
+            console.log('case was population');
+            
           const updatedOptionPopulation = {
             ...filterOptions[indexToUpdate],
             value: population ?? [0,0], 

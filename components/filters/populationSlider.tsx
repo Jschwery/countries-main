@@ -14,15 +14,10 @@ export interface FilterState{
   population?: [number, number];
 }
 
-  type HandleAnotherTest = {
-    handle: (arg: [number, number]) => void;
-  }
-  
-
 export default function MinimumDistanceSlider({callback, filterName, population}: FilterState) {
 
   const handleCheckClick = () =>{
-    callback("population", undefined, [value2[0], value2[1]], true);
+    callback && callback("population", undefined, [value2[0], value2[1]], true);
   }
 
   const [value2, setValue2] = React.useState<number[]>([0, 15]);
