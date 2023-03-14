@@ -1,15 +1,90 @@
 'use client';
 import CountryLink from '@components/countryLink'
-import FilterComponent from '@components/filters/filterComponent'
+import FilterComponent, { FilterOptions } from '@components/filters/filterComponent'
 import TablePaginationDemo from '@components/filters/paginate'
 import SearchBar from '@components/filters/searchBar'
 import React, { useEffect, useState } from 'react'
 import { Country } from '../app/page'
 import Image from 'next/image'
+import { FilterOption, Filter } from '@components/filters/filterComponent';
 
 function CountriesDisplay({countries}: {countries: Country[]}) {
 
+//get the filters from the filter component
+//this will be done passing a callback function, which has the same shape as the array of filters
+
+//the callback should take the filters from the child component and add them to state
+//in order to keep updating the state of the parent component, the callback needs the setfilters within it
+
 const [resultCount, setResultCount] = useState(countries.length);
+const [countryFilters, setCountryFilters] = useState<FilterOption[]>([])
+
+const filterCallback = (filterOptions: FilterOptions) =>{
+  //useEffect to call the setResult each time the result changes
+  useEffect(()=>{
+    if(removeFilter){
+      const indexToUpdate = filterOptions.findIndex((option) => 
+      option.filterType.toLocaleLowerCase() === removeFilter.toLocaleLowerCase()
+    );
+    switch(removeFilter.toLocaleLowerCase()){
+      case "population":
+        
+      const updatedOptionPopulation = {
+        ...filterOptions[indexToUpdate],
+        value: population ?? [0,0], 
+        active: true, 
+        filterEdit: false
+        
+      };
+      const updatedOptionsPopulation = [
+        ...options.slice(0, indexToUpdate),
+        updatedOptionPopulation,
+        ...options.slice(indexToUpdate + 1),
+      ];
+      setOptions(updatedOptionsPopulation);
+      break;   
+      case "region":
+      const updatedOptionRegion = {
+        ...filterOptions[indexToUpdate],
+        value: bordersOrRegion ?? [], 
+        active: true, 
+        filterEdit: false,
+      };
+      const updatedOptions = [
+        ...options.slice(0, indexToUpdate),
+        updatedOptionRegion,
+        ...options.slice(indexToUpdate + 1),
+      ];
+      setOptions(updatedOptions);
+      break;   
+      case "border":
+      const updatedOptionBorders = {
+        ...filterOptions[indexToUpdate],
+
+        value: bordersOrRegion ?? [], 
+        active: true,
+        filterEdit: false,
+      };
+      const updatedOptionsBorders = [
+        ...options.slice(0, indexToUpdate),
+        updatedOptionBorders,
+        ...options.slice(indexToUpdate + 1),
+      ];
+      setOptions(updatedOptionsBorders);
+      break;   
+    }
+  }
+
+  }
+
+
+  },[filterOptions, removeFilter])
+
+
+}
+
+
+
 
 const filterCheckAndApply = (q: string|undefined, props: Props['props'], countries: Country[])=>{
   let filteredCountries: Country[] = countries;
@@ -103,10 +178,10 @@ const filterCheckAndApply = (q: string|undefined, props: Props['props'], countri
           <TablePaginationDemo resultCount={countries.length} />
       </div>
     {countries.map((country, index) => (
-      <div className="flex mx-auto card-center">
+      <div key={`${country.name.common}-${index}`} className="flex mx-auto card-center">
         
       <CountryLink href={`/${(country.name.common.trim().split(' ').join('+'))}`}>
-          <div key={`${country.name.common}-${index}`} className="country flex w-56 h-64 flex-col bg-slate-600 
+          <div className="country flex w-56 h-64 flex-col bg-slate-600 
           rounded-md shadow-md shadow-black m-4 cursor-pointer cards-sm">
             <div className="h-1/2 bg-gray-600 flex justify-center items-center rounded-md flex-auto">
             <Image
