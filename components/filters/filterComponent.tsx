@@ -45,11 +45,20 @@ import {PencilIcon} from "@heroicons/react/24/outline";
 
   
       const handleFilterOptions = (filterName: string, bordersOrRegion?: [], population?: [number, number], filterEdit?: boolean) => {
-     
+        console.log('console initiated:\n\n');
+        console.log('filtername: '+filterName+'\n');
+        console.log('bordersregion: '+bordersOrRegion + '\n');
+        console.log('population: ' + population + '\n');
+        console.log('filteredit: '+ filterEdit+ '\n');
+        
+        
+
         const indexToUpdate = options.findIndex(option => 
           option.filterType.toLocaleLowerCase() === filterName.toLocaleLowerCase()
         );
         
+        console.log('indextoupdate: '+ indexToUpdate);
+
         switch(filterName.toLocaleLowerCase()){
           case "Population":
             console.log('case was population');
