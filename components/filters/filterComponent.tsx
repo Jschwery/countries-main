@@ -1,27 +1,32 @@
-"use client";
-  
-import React, { ReactNode, useEffect, useState } from "react";
-import { CheckCircleIcon } from "@heroicons/react/24/solid";
-import Slider from "@mui/material/Slider";
-import MinimumDistanceSlider from "./populationSlider";
-import SelectAutoWidth from "./dropdownFilter";
-import {XCircleIcon} from "@heroicons/react/24/solid";
-import Check, { CheckIcon } from "@heroicons/react/24/outline"
-import {PencilIcon} from "@heroicons/react/24/outline";    
+'use client';
 
-  function FilterComponent() {
+import React, { ReactNode, useEffect, useState } from 'react';
+import { CheckCircleIcon } from '@heroicons/react/24/solid';
+import Slider from '@mui/material/Slider';
+import MinimumDistanceSlider from './populationSlider';
+import SelectAutoWidth from './dropdownFilter';
+import { XCircleIcon } from '@heroicons/react/24/solid';
+import Check, { CheckIcon } from '@heroicons/react/24/outline';
+import { PencilIcon } from '@heroicons/react/24/outline';
 
-    interface FilterOption {
-      filterType: string;
-      value: [number, number] | string[];
-      active: boolean;
-      filterEdit?: boolean
-    }
-    
-    interface Filter {
-      [key: string]: {
-        isActive?: boolean;
-      };
+export interface FilterOptions {
+  filterName: string;
+  value: [number, number] | string[];
+  active?: boolean;
+  filterEdit?: boolean;
+}
+
+//this filter component needs to be passed into the dropdown filter
+
+function FilterComponent() {
+  const filterOptions: FilterOptions[] = [
+    { filterName: 'Region', value: [''], active: false, filterEdit: false },
+    { filterName: 'Borders', value: [''], active: false, filterEdit: false },
+    {
+      filterName: 'Population',
+      value: [0, 0],
+      active: false,
+      filterEdit: false
     }
     const filterOptions: FilterOption[] = [
       { filterType: "Region", value: [''], active: false, filterEdit: false },
@@ -45,20 +50,11 @@ import {PencilIcon} from "@heroicons/react/24/outline";
 
   
       const handleFilterOptions = (filterName: string, bordersOrRegion?: [], population?: [number, number], filterEdit?: boolean) => {
-        console.log('console initiated:\n\n');
-        console.log('filtername: '+filterName+'\n');
-        console.log('bordersregion: '+bordersOrRegion + '\n');
-        console.log('population: ' + population + '\n');
-        console.log('filteredit: '+ filterEdit+ '\n');
-        
-        
-
+     
         const indexToUpdate = options.findIndex(option => 
           option.filterType.toLocaleLowerCase() === filterName.toLocaleLowerCase()
         );
         
-        console.log('indextoupdate: '+ indexToUpdate);
-
         switch(filterName.toLocaleLowerCase()){
           case "Population":
             console.log('case was population');
@@ -191,72 +187,71 @@ import {PencilIcon} from "@heroicons/react/24/outline";
     check that the value is not the default
   */
   return (
-  <div className="flex flex-col sm:flex-row w-full justify-start sm:justify-end items-start">{
-      selectedOption ? selectedOption : ''
-    }
-    <div id="filter-button-container" className="relative md:pl-2 py-4 items-end flex">
-    {filterButtonShown && (
-      <button
-        type="button"
-        className="inline-flex w-32 h-[45px] right-0 top-0 rounded-md border border-gray-300 hover:border-lime-600 shadow-sm px-4 py-2 dark:bg-slate-700 bg-white text-sm font-medium  hover:bg-gray-50 focus:outline-none focus:ring-2 text-white  focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
-        id="menu-button"
-        aria-expanded="true"
-        aria-haspopup="true">
-        Filters
-        <svg
-          className="-mr-1 ml-2 h-5 w-5"
-          viewBox="0 0 20 20"
-          fill="currentColor">
-          <path
-            fillRule="evenodd"
-            d="M10 12a1 1 0 01-.707-.293l-4-4a1 1 0 111.414-1.414L10 9.586l3.293-3.293a1 1 0 111.414 1.414l-4 4A1 1 0 0110 12z"
-            clipRule="evenodd"/>
-        </svg>
-      </button>
-    )
-  }
-  
-      <div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-slate-700 filters-sm z-20">
-        <div
-          className="py-1 transition duration-500 ease-in border-transparent hover:border-lime-500"
-          role="menu"
-          aria-orientation="vertical"
-          aria-labelledby="menu-button">
-          {
-            <ul className="">
-              {options.map((options, iteration) => (
-                <li
-                  key={options.filterType + "-" + iteration}
-                  className="hover:bg-slate-700 hover:opacity-60 p-2 leading-4 text-lg cursor-pointer flex truncate"
-                  onClick={() => handleFilterClicked(options.filterType)}>
-                  <div className="flex items-center justify-between">
-                    <div className="w-[175px]">
-                      <span className=" px-1">{options.filterType}</span>
-                    </div>
-                    {
-                      filterOptions.filter((filters) => filters.filterType.toLowerCase() === options.filterType.toLowerCase() && filters.filterEdit === true)
+    <div className="flex flex-col sm:flex-row w-full justify-start sm:justify-end items-start">
+      {selectedOption ? selectedOption : ''}
+      <div id="filter-button-container" className="relative md:pl-2 py-4 items-end flex">
+        {filterButtonShown && (
+          <button
+            type="button"
+            className="inline-flex w-32 h-[45px] right-0 top-0 rounded-md border border-gray-300 hover:border-lime-600 shadow-sm px-4 py-2 dark:bg-slate-700 bg-white text-sm font-medium  hover:bg-gray-50 focus:outline-none focus:ring-2 text-white  focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+            id="menu-button"
+            aria-expanded="true"
+            aria-haspopup="true">
+            Filters
+            <svg className="-mr-1 ml-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path
+                fillRule="evenodd"
+                d="M10 12a1 1 0 01-.707-.293l-4-4a1 1 0 111.414-1.414L10 9.586l3.293-3.293a1 1 0 111.414 1.414l-4 4A1 1 0 0110 12z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
+        )}
+
+        <div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-slate-700 filters-sm z-20">
+          <div
+            className="py-1 transition duration-500 ease-in border-transparent hover:border-lime-500"
+            role="menu"
+            aria-orientation="vertical"
+            aria-labelledby="menu-button">
+            {
+              <ul className="">
+                {options.map((options, iteration) => (
+                  <li
+                    key={options.filterType + '-' + iteration}
+                    className="hover:bg-slate-700 hover:opacity-60 p-2 leading-4 text-lg cursor-pointer flex truncate"
+                    onClick={() => handleFilterClicked(options.filterType)}>
+                    <div className="flex items-center justify-between">
+                      <div className="w-[175px]">
+                        <span className=" px-1">{options.filterType}</span>
+                      </div>
+                      {filterOptions
+                        .filter(
+                          (filters) =>
+                            filters.filterType.toLowerCase() === options.filterType.toLowerCase() &&
+                            filters.filterEdit === true
+                        )
                         .map((found, iteration) => {
                           return (
                             <div key={found.filterType + '-' + `${iteration}`}>
                               <PencilIcon className=" w-[22px] h-[22px] text-yellow-300" />
                             </div>
                           );
-                        })
-                    }
-                    {options.active ? (
-                      <CheckCircleIcon className=" text-green-500 w-[25px] h-[25px]" />
-                    ) : (
-                      <CheckCircleIcon className=" text-gray-500 w-[25px] h-[25px]" />
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          }
+                        })}
+                      {options.active ? (
+                        <CheckCircleIcon className=" text-green-500 w-[25px] h-[25px]" />
+                      ) : (
+                        <CheckCircleIcon className=" text-gray-500 w-[25px] h-[25px]" />
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            }
+          </div>
         </div>
       </div>
     </div>
-    </div>
   );
-};
+}
 export default FilterComponent;
