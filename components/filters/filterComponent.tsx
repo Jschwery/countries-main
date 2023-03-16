@@ -8,6 +8,7 @@ import SelectAutoWidth from './dropdownFilter';
 import { XCircleIcon } from '@heroicons/react/24/solid';
 import Check, { CheckIcon } from '@heroicons/react/24/outline';
 import { PencilIcon } from '@heroicons/react/24/outline';
+import filterObjectAndIndex from '../countriesDisplay';
 
 export interface FilterOptions {
   filterName: string;
@@ -15,11 +16,17 @@ export interface FilterOptions {
   active?: boolean;
   filterEdit?: boolean;
 }
+type FilterCallback = { 
+  filterOptionCallback?: (filterOptions: FilterOptions[],
+    removeFilter?: string,
+    toggleFilter?: string) => FilterOptions[];
+}
+//should the countries display pass
 
 //this filter component needs to be passed into the dropdown filter
-
-function FilterComponent() {
-  const filterOptions: FilterOptions[] = [
+//filterOptions: FilterOptions[], filterOptionCallback?: FilterCallback
+function FilterComponent(filterOptionCallback?: FilterCallback) {
+  const filters: FilterOptions[] = [
     { filterName: 'Region', value: [''], active: false, filterEdit: false },
     { filterName: 'Borders', value: [''], active: false, filterEdit: false },
     {
@@ -28,160 +35,153 @@ function FilterComponent() {
       active: false,
       filterEdit: false
     }
-    const filterOptions: FilterOption[] = [
-      { filterType: "Region", value: [''], active: false, filterEdit: false },
-      { filterType: "Borders", value: [''], active: false, filterEdit: false },
-      { filterType: "Population", value: [0, 0], active: false, filterEdit: false },
-    ];
+  ];
 
-  
-    const [options, setOptions] = useState<FilterOption[]>(filterOptions);
-    const [queue, setQueue] = useState<string[]>([]);
-    const [selectedOption, setSelectedOption] = useState<JSX.Element | null>(null);
-    const [filterActive, setFilterActive] = useState<Filter>({});
-    const [filterButtonShown, setFilterButtonShown] = useState(true);
+  const [options, setOptions] = useState<FilterOptions[]>(filters);
+  const [queue, setQueue] = useState<string[]>([]);
+  const [selectedOption, setSelectedOption] = useState<JSX.Element | null>(null);
+  const [filterButtonShown, setFilterButtonShown] = useState(true);
 
-    useEffect(()=>{
-      console.log('in use effect')
-      options.forEach((o)=>{
-        console.log(o.filterType, " " + o.value)
-      })
-    },[options])
+  useEffect(() => {
+    console.log('in use effect');
+    options?.forEach((o) => {
+      console.log(o, ' ' + o.value);
+    });
+    if (filterOptionCallback && filterOptionCallback.filterOptionCallback) {
+      const filteredOptions = filterOptionCallback.filterOptionCallback();
 
-  
-      const handleFilterOptions = (filterName: string, bordersOrRegion?: [], population?: [number, number], filterEdit?: boolean) => {
-     
-        const indexToUpdate = options.findIndex(option => 
-          option.filterType.toLocaleLowerCase() === filterName.toLocaleLowerCase()
+    }
+    //each time options changes need to use the callback from the countries display.
+    //import interface of callback from parent, pass values to the display countries, then when any of these countries from options
+    //changes the callback will be called again, reflecting the current information
+  }, [options]);
+
+  /*Used as a callback passed down to the different input elements such as the slider, borders dropdown etc. 
+    Gets the values from callback and saves them into the state variable 'options' and 
+  */
+  const FilterOptions = (filter: FilterOptions[]) => {
+    filterObjectAndIndex('population', filter.);
+
+    switch (filter.toLocaleLowerCase()) {
+      case 'population':
+        filterObjectAndIndex('population', filter.);
+        const updatedOptionPopulation = {
+          ...(options ? options[indexToUpdate ?? -1] : {}),
+          value: filter.value ?? [0, 0],
+          active: false ? true : false,
+          filterEdit: false ? true : false,
+          filterName: filter.filterName
+        };
+        const updatedOptionsPopulation = [
+          ...options.slice(0, indexToUpdate),
+          updatedOptionPopulation,
+          ...options.slice(indexToUpdate + 1)
+        ];
+        setOptions(updatedOptionsPopulation);
+        break;
+      case 'region':
+        const updatedOptionRegion = {
+          ...(options ? options[indexToUpdate ?? 0] : {}),
+          value: filter.value ?? [''],
+          active: false ? true : false,
+          filterEdit: false ? true : false,
+          filterName: filter.filterName
+        };
+        const updatedOptionsRegion = [
+          ...options.slice(0, indexToUpdate),
+          updatedOptionRegion,
+          ...options.slice(indexToUpdate + 1)
+        ];
+        setOptions(updatedOptionsRegion);
+        break;
+      case 'border':
+        const updatedOptionBorders = {
+          ...(options ? options[indexToUpdate ?? 0] : {}),
+          value: filter.value ?? [''],
+          active: false ? true : false,
+          filterEdit: false ? true : false,
+          filterName: filter.filterName
+        };
+        const updatedOptionsBorders = [
+          ...options.slice(0, indexToUpdate),
+          updatedOptionBorders,
+          ...options.slice(indexToUpdate + 1)
+        ];
+        setOptions(updatedOptionsBorders);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleSetQueue = (name: string) => {
+    if (queue.includes(name)) {
+      const filteredQueue = queue.filter((item) => item !== name);
+      setQueue(filteredQueue);
+      return filteredQueue;
+    }
+    const updatedQueue = [...queue, name];
+    setQueue(updatedQueue);
+    return updatedQueue;
+  };
+
+  const filterClicked = (name: string) => {
+    const index = options.findIndex((x) => x.filterName === name);
+    setFilterButtonShown(!filterButtonShown);
+    if (index !== -1) {
+      const updatedOption = {
+        ...options[index],
+        active: !options[index].active
+      };
+      const updatedOptions = [...options];
+      updatedOptions[index] = updatedOption;
+      setOptions(updatedOptions);
+      const updatedQueue = handleSetQueue(updatedOption.filterName);
+      setSelectedOption(showOptionSlider(updatedQueue) || null);
+    }
+  };
+
+  const removeActiveList = (name: string) => {
+    const removeItem = queue.filter((q) => q !== name);
+    setQueue(removeItem);
+  };
+
+  const handleHideContainer = () => {
+    setSelectedOption(null);
+    setQueue([]);
+  };
+
+  const showOptionSlider = (queue: string[]) => {
+    const name = queue[0];
+    const option = options.find((x) => x.filterName === name);
+
+    //the parent passes callback function
+    //child needs to accept structure
+    //parent defines structure, exports it, child can use structure within the
+
+    switch (option?.filterName) {
+      case 'Population':
+        return (
+          <div className="flex align-middle justify-center items-center w-full bg-amber-400">
+            <MinimumDistanceSlider callback={filterOptions} />
+          </div>
         );
-        
-        switch(filterName.toLocaleLowerCase()){
-          case "Population":
-            console.log('case was population');
-            
-          const updatedOptionPopulation = {
-            ...filterOptions[indexToUpdate],
-            value: population ?? [0,0], 
-            active: true, 
-            filterEdit: false
-            
-          };
-          const updatedOptionsPopulation = [
-            ...options.slice(0, indexToUpdate),
-            updatedOptionPopulation,
-            ...options.slice(indexToUpdate + 1),
-          ];
-          setOptions(updatedOptionsPopulation);
-          break;   
-          case "Region":
-          const updatedOptionRegion = {
-            ...filterOptions[indexToUpdate],
-            value: bordersOrRegion ?? [], 
-            active: true, 
-            filterEdit: false,
-          };
-          const updatedOptions = [
-            ...options.slice(0, indexToUpdate),
-            updatedOptionRegion,
-            ...options.slice(indexToUpdate + 1),
-          ];
-          setOptions(updatedOptions);
-          break;   
-          case "Border":
-          const updatedOptionBorders = {
-            ...filterOptions[indexToUpdate],
-            value: bordersOrRegion ?? [], 
-            active: true,
-            filterEdit: false,
-          };
-          const updatedOptionsBorders = [
-            ...options.slice(0, indexToUpdate),
-            updatedOptionBorders,
-            ...options.slice(indexToUpdate + 1),
-          ];
-          setOptions(updatedOptionsBorders);
-          break;   
-        }
-      }
-      
-    const handleSetQueue = (name: string) => {
-      if (queue.includes(name)) {
-        const filteredQueue = queue.filter((item) => item !== name);
-        setQueue(filteredQueue);
-        return filteredQueue;
-      }
-      const updatedQueue = [...queue, name];
-      setQueue(updatedQueue);
-      return updatedQueue;
-    };
-    
-    const handleFilterClicked = (name: string) => {
-      const index = options.findIndex((x) => x.filterType === name);
-      setFilterButtonShown(!filterButtonShown);
-      if (index !== -1) {
-        const updatedOption = { ...options[index], active: !options[index].active };
-        const updatedOptions = [...options];
-        updatedOptions[index] = updatedOption;
-        setOptions(updatedOptions);
-        const updatedQueue = handleSetQueue(updatedOption.filterType);
-        setSelectedOption(showOptionSlider(updatedQueue) || null);
-        if (updatedOption.active) {
-          setFilterActive((prevState) => ({
-            ...prevState,
-            [name]: {
-              isActive: true,
-            },
-          }));
-        } else {
-          setFilterActive((prevState) => {
-            const newState = { ...prevState };
-            delete newState[name];
-            return newState;
-          });
-        }
-      }
-    };
-  
-    const removeActiveList = (name: string) => {
-      const removeItem = queue.filter((q) => q !== name);
-      setQueue(removeItem);
-    };
-  
-    const handleHideContainer = () => {
-      setSelectedOption(null);
-      setQueue([]);
-      setFilterActive({});
-    };
-  
-    const showOptionSlider = (queue: string[]) => {
-      const name = queue[0];
-      const option = options.find((x) => x.filterType === name);
-  //these components need a callback passed
-  //
-      switch (option?.filterType) {
-        case "Population":
-          return (
-              <div className="flex align-middle justify-center items-center w-full bg-amber-400">
-                <MinimumDistanceSlider callback={handleFilterOptions} />
-              </div>
-          );
-        case "Region":
-          return (
-              <div className="flex align-middle justify-center items-center w-full bg-amber-400">
-                <SelectAutoWidth callback={handleFilterOptions}  title="Region" />
-              </div>
-        
-          );
-        case "Borders":
-          return (
-            <div className="flex align-middle justify-center items-center w-full bg-amber-400">
-              <SelectAutoWidth callback={handleFilterOptions} title="Borders" />
-            </div>
-          );
-        default:
-          return null;
-      }
-    };
+      case 'Region':
+        return (
+          <div className="flex align-middle justify-center items-center w-full bg-amber-400">
+            <SelectAutoWidth callback={filterOptions} title="Region" />
+          </div>
+        );
+      case 'Borders':
+        return (
+          <div className="flex align-middle justify-center items-center w-full bg-amber-400">
+            <SelectAutoWidth callback={filterOptions} title="Borders" />
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
   /*
     check if there is a global value for the population
     check that the value is not the default
@@ -218,12 +218,12 @@ function FilterComponent() {
               <ul className="">
                 {options.map((options, iteration) => (
                   <li
-                    key={options.filterType + '-' + iteration}
+                    key={options.filterName + '-' + iteration}
                     className="hover:bg-slate-700 hover:opacity-60 p-2 leading-4 text-lg cursor-pointer flex truncate"
-                    onClick={() => handleFilterClicked(options.filterType)}>
+                    onClick={() => filterClicked(options.filterName)}>
                     <div className="flex items-center justify-between">
                       <div className="w-[175px]">
-                        <span className=" px-1">{options.filterType}</span>
+                        <span className=" px-1">{options.filterName}</span>
                       </div>
                       {filterOptions
                         .filter(

@@ -4,23 +4,15 @@ import Box from '@mui/material/Box';
 import { Slider, SliderThumb as Thumb } from '@mui/material';
 import { CheckIcon } from '@heroicons/react/24/solid';
 import { useGlobalContext } from '@global/provider';
-import { FilterOption } from './filterComponent';
 import { FilterOptions } from './filterComponent';
-
 const minDistance = 10;
-// export interface FilterOptions {
-//   filterName: string;
-//   filterOptions: FilterOption[];
-//   active: boolean,
-//   bordersOrRegion?: [];
-//   population?: [number, number];
-//   filterEdit?: boolean;
 
 export interface FilterState {
   callback: (filterOption: FilterOptions) => void;
+  population?: [number, number];
 }
 
-export default function MinimumDistanceSlider({ callback }: FilterState) {
+export default function MinimumDistanceSlider({ callback, population }: FilterState) {
   const handleCheckClick = () => {
     console.log('check clicked');
     callback &&
@@ -28,10 +20,11 @@ export default function MinimumDistanceSlider({ callback }: FilterState) {
         filterName: 'population',
         active: active,
         population: [value2[0], value2[1]],
-        filterEdit: true
+        filterEdit: active ? true : false
       });
     React.useEffect(() => {
       setIsActive(!active);
+      population ? setValue2(population) : [0, 15];
       console.log(`${active ? 'slider is active' : 'slider is not active'}`);
     }, [active]);
   };
@@ -59,10 +52,6 @@ export default function MinimumDistanceSlider({ callback }: FilterState) {
       setValue2(newValue as number[]);
     }
   };
-
-  // const handleCheckClick = () =>{
-
-  // }
 
   return (
     <div className="flex items-center w-full">
