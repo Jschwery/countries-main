@@ -8,19 +8,22 @@ import SelectAutoWidth from './dropdownFilter';
 import { XCircleIcon } from '@heroicons/react/24/solid';
 import Check, { CheckIcon } from '@heroicons/react/24/outline';
 import { PencilIcon } from '@heroicons/react/24/outline';
-import filterObjectAndIndex from '../countriesDisplay';
+import flterObjectAndIndex, { fltrObjectAndIndex } from '../countriesDisplay';
+import { PaginateType } from './paginate';
 
 export interface FilterOptions {
   filterName: string;
-  value: [number, number] | string[];
+  value: [number, number] | string[] | PaginateType;
   active?: boolean;
   filterEdit?: boolean;
 }
-type FilterCallback = { 
-  filterOptionCallback?: (filterOptions: FilterOptions[],
+type FilterCallback = {
+  filterOptionCallback?: (
+    filterOptions: FilterOptions[],
     removeFilter?: string,
-    toggleFilter?: string) => FilterOptions[];
-}
+    toggleFilter?: string
+  ) => FilterOptions[];
+};
 //should the countries display pass
 
 //this filter component needs to be passed into the dropdown filter
@@ -37,6 +40,9 @@ function FilterComponent(filterOptionCallback?: FilterCallback) {
     }
   ];
 
+  //use clicks on filter
+  //if the filter is
+
   const [options, setOptions] = useState<FilterOptions[]>(filters);
   const [queue, setQueue] = useState<string[]>([]);
   const [selectedOption, setSelectedOption] = useState<JSX.Element | null>(null);
@@ -47,65 +53,52 @@ function FilterComponent(filterOptionCallback?: FilterCallback) {
     options?.forEach((o) => {
       console.log(o, ' ' + o.value);
     });
-    if (filterOptionCallback && filterOptionCallback.filterOptionCallback) {
-      const filteredOptions = filterOptionCallback.filterOptionCallback();
-
-    }
-    //each time options changes need to use the callback from the countries display.
-    //import interface of callback from parent, pass values to the display countries, then when any of these countries from options
-    //changes the callback will be called again, reflecting the current information
+    filterOptionCallback?.filterOptionCallback ? options : undefined;
   }, [options]);
 
   /*Used as a callback passed down to the different input elements such as the slider, borders dropdown etc. 
     Gets the values from callback and saves them into the state variable 'options' and 
   */
-  const FilterOptions = (filter: FilterOptions[]) => {
-    filterObjectAndIndex('population', filter.);
+  const filterOptions = (filter: FilterOptions[], filterName: string) => {
+    const filterAndIndex = fltrObjectAndIndex(filterName, filter);
 
-    switch (filter.toLocaleLowerCase()) {
+    switch (filterName.toLocaleLowerCase()) {
       case 'population':
-        filterObjectAndIndex('population', filter.);
         const updatedOptionPopulation = {
-          ...(options ? options[indexToUpdate ?? -1] : {}),
-          value: filter.value ?? [0, 0],
-          active: false ? true : false,
-          filterEdit: false ? true : false,
-          filterName: filter.filterName
+          ...(options ? options[filterAndIndex.index ?? -1] : {}),
+          value: filterAndIndex.filterOption?.value ?? [0, 0],
+          filterName: filterAndIndex.filterOption?.filterName ?? ''
         };
         const updatedOptionsPopulation = [
-          ...options.slice(0, indexToUpdate),
+          ...options.slice(0, filterAndIndex.index),
           updatedOptionPopulation,
-          ...options.slice(indexToUpdate + 1)
+          ...options.slice(filterAndIndex.index + 1)
         ];
         setOptions(updatedOptionsPopulation);
         break;
       case 'region':
         const updatedOptionRegion = {
-          ...(options ? options[indexToUpdate ?? 0] : {}),
-          value: filter.value ?? [''],
-          active: false ? true : false,
-          filterEdit: false ? true : false,
-          filterName: filter.filterName
+          ...(options ? options[filterAndIndex.index ?? -1] : {}),
+          value: filterAndIndex.filterOption?.value ?? [''],
+          filterName: filterAndIndex.filterOption?.filterName ?? ''
         };
         const updatedOptionsRegion = [
-          ...options.slice(0, indexToUpdate),
+          ...options.slice(0, filterAndIndex.index),
           updatedOptionRegion,
-          ...options.slice(indexToUpdate + 1)
+          ...options.slice(filterAndIndex.index + 1)
         ];
         setOptions(updatedOptionsRegion);
         break;
       case 'border':
         const updatedOptionBorders = {
-          ...(options ? options[indexToUpdate ?? 0] : {}),
-          value: filter.value ?? [''],
-          active: false ? true : false,
-          filterEdit: false ? true : false,
-          filterName: filter.filterName
+          ...(options ? options[filterAndIndex.index ?? -1] : {}),
+          value: filterAndIndex.filterOption?.value ?? [''],
+          filterName: filterAndIndex.filterOption?.filterName ?? ''
         };
         const updatedOptionsBorders = [
-          ...options.slice(0, indexToUpdate),
+          ...options.slice(0, filterAndIndex.index),
           updatedOptionBorders,
-          ...options.slice(indexToUpdate + 1)
+          ...options.slice(filterAndIndex.index + 1)
         ];
         setOptions(updatedOptionsBorders);
         break;
@@ -131,7 +124,8 @@ function FilterComponent(filterOptionCallback?: FilterCallback) {
     if (index !== -1) {
       const updatedOption = {
         ...options[index],
-        active: !options[index].active
+        options: !options[index].active,
+        filerEdit: !options[index].filterEdit
       };
       const updatedOptions = [...options];
       updatedOptions[index] = updatedOption;

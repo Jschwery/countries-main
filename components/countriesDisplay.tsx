@@ -35,67 +35,11 @@ that has access to whether or not the sliders
 
   const filterCallback = (
     filterOptions: FilterOptions[],
-    removeFilter?: string,
-    toggleFilter?: string
   ) => {
-    //useEffect to call the setResult each time the result changes
     useEffect(() => {
-      if (removeFilter) {
-        const indexToUpdate = filterOptions.findIndex(
-          (option) => option.filterName.toLocaleLowerCase() === removeFilter.toLocaleLowerCase()
-        );
-        switch (toggleFilter?.toLocaleLowerCase()) {
-          case 'population':
-            const populationFilter = filterObjectAndIndex('population', filterOptions);
-            const updatedOptionPopulation = {
-              ...filterOptions[populationFilter.index],
-              value: populationFilter.filterOption?.value ?? [0, 0],
-              active: populationFilter?.filterOption?.active ?? true, //this will set the
-              filterEdit: populationFilter?.filterOption?.filterEdit ?? true
-            };
-            const updatedOptionsPopulation = [
-              ...filterOptions.slice(0, indexToUpdate),
-              updatedOptionPopulation,
-              ...filterOptions.slice(indexToUpdate + 1)
-            ];
-            setCountryFilters(updatedOptionsPopulation);
-            break;
-          case 'region':
-            const regionFilter = filterObjectAndIndex('region', filterOptions);
+       setCountryFilters(filterOptions))
 
-            const updatedOptionRegion = {
-              ...filterOptions[indexToUpdate],
-              value: regionFilter.filterOption?.value ?? [],
-              active: regionFilter?.filterOption?.active ?? true,
-              filterEdit: regionFilter?.filterOption?.filterEdit ?? true
-            };
-            const updatedOptions = [
-              ...filterOptions.slice(0, indexToUpdate),
-              updatedOptionRegion,
-              ...filterOptions.slice(indexToUpdate + 1)
-            ];
-            setCountryFilters(updatedOptions);
-            break;
-          case 'border':
-            const borderFilter = filterObjectAndIndex('population', filterOptions);
-
-            const updatedOptionBorders = {
-              ...filterOptions[indexToUpdate],
-
-              value: borderFilter.filterOption?.value ?? [],
-              active: borderFilter.filterOption?.active ?? true,
-              filterEdit: borderFilter.filterOption?.filterEdit ?? true
-            };
-            const updatedOptionsBorders = [
-              ...filterOptions.slice(0, indexToUpdate),
-              updatedOptionBorders,
-              ...filterOptions.slice(indexToUpdate + 1)
-            ];
-            setCountryFilters(updatedOptionsBorders);
-            break;
-        }
-      }
-    }, [filterOptions, removeFilter]);
+    }
 
     return (
       <div>
