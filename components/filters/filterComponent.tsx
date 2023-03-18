@@ -24,10 +24,7 @@ type FilterCallback = {
     toggleFilter?: string
   ) => FilterOptions[];
 };
-//should the countries display pass
 
-//this filter component needs to be passed into the dropdown filter
-//filterOptions: FilterOptions[], filterOptionCallback?: FilterCallback
 function FilterComponent(filterOptionCallback?: FilterCallback) {
   const filters: FilterOptions[] = [
     { filterName: 'Region', value: [''], active: false, filterEdit: false },
@@ -40,8 +37,21 @@ function FilterComponent(filterOptionCallback?: FilterCallback) {
     }
   ];
 
-  //use clicks on filter
-  //if the filter is
+  useEffect(() => {
+    if (countryFilters.length > 0) {
+      const countriesFiltered = filteredCountries.reduce<Country[]>((accumulator, current) => {
+        const isCountryValid = countryFilters.every((filter) => filter(current));
+        if (isCountryValid) {
+          accumulator.push(current);
+        }
+        return accumulator;
+      }, []);
+
+      setFilteredCountries(countriesFiltered);
+    } else {
+      setFilteredCountries(countries);
+    }
+  }, [countryFilters]);
 
   const [options, setOptions] = useState<FilterOptions[]>(filters);
   const [queue, setQueue] = useState<string[]>([]);
@@ -53,8 +63,19 @@ function FilterComponent(filterOptionCallback?: FilterCallback) {
     options?.forEach((o) => {
       console.log(o, ' ' + o.value);
     });
-    filterOptionCallback?.filterOptionCallback ? options : undefined;
   }, [options]);
+
+  interface FilterMethods {
+    filterMethod: (country: Country) => boolean;
+  }
+
+  /*
+handle callback
+
+we are passed the filteroptions to pass in
+
+
+*/
 
   /*Used as a callback passed down to the different input elements such as the slider, borders dropdown etc. 
     Gets the values from callback and saves them into the state variable 'options' and 

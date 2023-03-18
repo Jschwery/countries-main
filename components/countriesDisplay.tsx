@@ -6,6 +6,11 @@ import SearchBar from '@components/filters/searchBar';
 import React, { useEffect, useState } from 'react';
 import { Country } from '../app/page';
 import Image from 'next/image';
+import { current } from '@reduxjs/toolkit';
+
+interface QuickCallback{
+  function: (filters: FilterOptions[]) => Country[]
+}
 
 export function fltrObjectAndIndex(filterName: String, filterOptions: FilterOptions[]) {
   const indexToUpdate = filterOptions.findIndex(
@@ -20,26 +25,34 @@ export function fltrObjectAndIndex(filterName: String, filterOptions: FilterOpti
     filterOption: foundFilter
   };
 }
+
+
+
+const filtersApply = (filterOps: FilterOptions[])=>{
+switch(filterOptions.filterName.toLocaleLowerCase()){
+  case 'population':{
+    
+  }
+  case 'borders':{
+
+  }
+  case 'paginate':{
+
+  }
+  case 'region'
+  }
+}
+
 function CountriesDisplay({ countries }: { countries: Country[] }) {
-  const [resultCount, setResultCount] = useState(countries.length);
-  const [countryFilters, setCountryFilters] = useState<FilterOptions[]>([]);
+  const [filteredCountries, setFilteredCountries] = useState<Country[]>(countries);
 
-  /*
-this is the top display, 
+  const filterCallback = (filterOptions: FilterOptions[], qc: QuickCallback ) => {
+      const countries = [...filteredCountries]
+      //
+    };
 
-if the filter component, which has the information from each of the filters, such as the population slider, and borders
-that has access to whether or not the sliders 
-
-
-*/
-
-  const filterCallback = (
-    filterOptions: FilterOptions[],
-  ) => {
-    useEffect(() => {
-       setCountryFilters(filterOptions))
-
-    }
+   
+ 
 
     return (
       <div>
@@ -57,7 +70,7 @@ that has access to whether or not the sliders
           <div className="w-full flex justify-center pt-4 sm:pt-0 align-middle">
             <TablePaginationDemo resultCount={countries.length} />
           </div>
-          {countries.map((country, index) => (
+          {filteredCountries.map((country, index) => (
             <div key={`${country.name.common}-${index}`} className="flex mx-auto card-center">
               <CountryLink href={`/${country.name.common.trim().split(' ').join('+')}`}>
                 <div
@@ -101,5 +114,5 @@ that has access to whether or not the sliders
       </div>
     );
   };
-}
+
 export default CountriesDisplay;
