@@ -7,39 +7,22 @@ import { useGlobalContext } from '@global/provider';
 import { FilterOptions } from './filterComponent';
 
 const minDistance = 10;
-// export interface FilterOptions {
-//   filterName: string;
-//   filterOptions: FilterOption[];
-//   active: boolean,
-//   bordersOrRegion?: [];
-//   population?: [number, number];
-//   filterEdit?: boolean;
 
 export interface FilterState {
   callback: (filterOption: FilterOptions) => void;
 }
 
 export default function MinimumDistanceSlider({ callback }: FilterState) {
+  const [value2, setValue2] = React.useState<number[]>([0, 15]);
+
   const handleCheckClick = () => {
     console.log('check clicked');
     callback &&
       callback({
         filterName: 'population',
-        active: active,
-        value: [value2[0], value2[1]],
-        filterEdit: true
+        value: [value2[0], value2[1]]
       });
-    React.useEffect(() => {
-      setIsActive(!active);
-      console.log(`${active ? 'slider is active' : 'slider is not active'}`);
-    }, [active]);
   };
-
-  const [value2, setValue2] = React.useState<number[]>([0, 15]);
-  const [active, setIsActive] = React.useState(false);
-  React.useEffect(() => {
-    console.log(value2);
-  }, [value2]);
 
   const handleChange2 = (event: Event, newValue: number | number[], activeThumb: number) => {
     if (!Array.isArray(newValue)) {
