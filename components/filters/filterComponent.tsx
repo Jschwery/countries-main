@@ -17,15 +17,12 @@ export interface FilterOptions {
   active?: boolean;
   filterEdit?: boolean;
 }
-type FilterCallback = {
-  filterOptionCallback?: (
-    filterOptions: FilterOptions[],
-    removeFilter?: string,
-    toggleFilter?: string
-  ) => FilterOptions[];
+
+type FilterComponentProps = {
+  filterCallback: (filterOptions: FilterOptions[]) => void;
 };
 
-function FilterComponent(filterOptionCallback?: FilterCallback) {
+function FilterComponent({ filterCallback }: FilterComponentProps) {
   const filters: FilterOptions[] = [
     { filterName: 'Region', value: [''], active: false, filterEdit: false },
     { filterName: 'Borders', value: [''], active: false, filterEdit: false },
@@ -37,49 +34,22 @@ function FilterComponent(filterOptionCallback?: FilterCallback) {
     }
   ];
 
-  useEffect(() => {
-    if (countryFilters.length > 0) {
-      const countriesFiltered = filteredCountries.reduce<Country[]>((accumulator, current) => {
-        const isCountryValid = countryFilters.every((filter) => filter(current));
-        if (isCountryValid) {
-          accumulator.push(current);
-        }
-        return accumulator;
-      }, []);
-
-      setFilteredCountries(countriesFiltered);
-    } else {
-      setFilteredCountries(countries);
-    }
-  }, [countryFilters]);
-
   const [options, setOptions] = useState<FilterOptions[]>(filters);
   const [queue, setQueue] = useState<string[]>([]);
   const [selectedOption, setSelectedOption] = useState<JSX.Element | null>(null);
   const [filterButtonShown, setFilterButtonShown] = useState(true);
 
   useEffect(() => {
-    console.log('in use effect');
-    options?.forEach((o) => {
-      console.log(o, ' ' + o.value);
-    });
+    console.log('options changed in filter component: ');
+
+    options.forEach((option) => console.log(option));
+    // options.some((option) => {
+    //   option.active;
+    // })
+    //   ? filterCallback(options)
+    //   : console.log('no filters active');
   }, [options]);
 
-  interface FilterMethods {
-    filterMethod: (country: Country) => boolean;
-  }
-
-  /*
-handle callback
-
-we are passed the filteroptions to pass in
-
-
-*/
-
-  /*Used as a callback passed down to the different input elements such as the slider, borders dropdown etc. 
-    Gets the values from callback and saves them into the state variable 'options' and 
-  */
   const filterOptions = (filter: FilterOptions[], filterName: string) => {
     const filterAndIndex = fltrObjectAndIndex(filterName, filter);
 
@@ -88,7 +58,7 @@ we are passed the filteroptions to pass in
         const updatedOptionPopulation = {
           ...(options ? options[filterAndIndex.index ?? -1] : {}),
           value: filterAndIndex.filterOption?.value ?? [0, 0],
-          filterName: filterAndIndex.filterOption?.filterName ?? ''
+          filterName: filterAndIndex.filterOption?.filterName ?? 'Population'
         };
         const updatedOptionsPopulation = [
           ...options.slice(0, filterAndIndex.index),
@@ -170,37 +140,30 @@ we are passed the filteroptions to pass in
     const name = queue[0];
     const option = options.find((x) => x.filterName === name);
 
-    //the parent passes callback function
-    //child needs to accept structure
-    //parent defines structure, exports it, child can use structure within the
-
     switch (option?.filterName) {
       case 'Population':
         return (
           <div className="flex align-middle justify-center items-center w-full bg-amber-400">
-            <MinimumDistanceSlider callback={filterOptions} />
+            <MinimumDistanceSlider filterOps={options} callback={filterOptions} />
           </div>
         );
       case 'Region':
         return (
           <div className="flex align-middle justify-center items-center w-full bg-amber-400">
-            <SelectAutoWidth callback={filterOptions} title="Region" />
+            <SelectAutoWidth filterOps={options} callback={filterOptions} title="Region" />
           </div>
         );
       case 'Borders':
         return (
           <div className="flex align-middle justify-center items-center w-full bg-amber-400">
-            <SelectAutoWidth callback={filterOptions} title="Borders" />
+            <SelectAutoWidth filterOps={options} callback={filterOptions} title="Borders" />
           </div>
         );
       default:
         return null;
     }
   };
-  /*
-    check if there is a global value for the population
-    check that the value is not the default
-  */
+
   return (
     <div className="flex flex-col sm:flex-row w-full justify-start sm:justify-end items-start">
       {selectedOption ? selectedOption : ''}
@@ -240,19 +203,13 @@ we are passed the filteroptions to pass in
                       <div className="w-[175px]">
                         <span className=" px-1">{options.filterName}</span>
                       </div>
-                      {filterOptions
-                        .filter(
-                          (filters) =>
-                            filters.filterType.toLowerCase() === options.filterType.toLowerCase() &&
-                            filters.filterEdit === true
-                        )
-                        .map((found, iteration) => {
-                          return (
-                            <div key={found.filterType + '-' + `${iteration}`}>
-                              <PencilIcon className=" w-[22px] h-[22px] text-yellow-300" />
-                            </div>
-                          );
-                        })}
+                      {options.filterEdit && options.active ? (
+                        <div>
+                          <PencilIcon className=" w-[22px] h-[22px] text-yellow-300" />
+                        </div>
+                      ) : (
+                        <></>
+                      )}
                       {options.active ? (
                         <CheckCircleIcon className=" text-green-500 w-[25px] h-[25px]" />
                       ) : (

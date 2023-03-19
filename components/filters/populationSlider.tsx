@@ -5,24 +5,40 @@ import { Slider, SliderThumb as Thumb } from '@mui/material';
 import { CheckIcon } from '@heroicons/react/24/solid';
 import { useGlobalContext } from '@global/provider';
 import { FilterOptions } from './filterComponent';
-
+import { useState, useEffect } from 'react';
+import { fltrObjectAndIndex } from '@components/countriesDisplay';
 const minDistance = 10;
 
 export interface FilterState {
-  callback: (filterOption: FilterOptions) => void;
+  callback: (filterOption: FilterOptions[], nameFilter: string) => void;
+  filterOps: FilterOptions[];
 }
 
-export default function MinimumDistanceSlider({ callback }: FilterState) {
-  const [value2, setValue2] = React.useState<number[]>([0, 15]);
-
+export default function MinimumDistanceSlider({ callback, filterOps }: FilterState) {
+  const filterAndIndex = fltrObjectAndIndex('population', filterOps);
   const handleCheckClick = () => {
-    console.log('check clicked');
-    callback &&
-      callback({
-        filterName: 'population',
-        value: [value2[0], value2[1]]
-      });
+    const updatedFilters = [...filterOps];
+    updatedFilters[filterAndIndex.index].active = !updatedFilters[filterAndIndex.index].active;
+    updatedFilters[filterAndIndex.index].filterEdit =
+      !updatedFilters[filterAndIndex.index].filterEdit;
+
+    updatedFilters.forEach((filter) => {
+      console.log(filter);
+    });
+    setFilters(updatedFilters);
+
+    callback(filters, 'Population');
   };
+
+  const [value2, setValue2] = useState<number[]>([0, 15]);
+  const [active, setIsActive] = useState(false);
+  const [filters, setFilters] = useState<FilterOptions[]>([]);
+  useEffect(() => {
+    const updatedFilterOps = [...filterOps]; // make a copy of the filterOps array
+    updatedFilterOps[filterAndIndex.index].value = [value2[0], value2[1]];
+
+    setFilters(updatedFilterOps);
+  }, [value2]);
 
   const handleChange2 = (event: Event, newValue: number | number[], activeThumb: number) => {
     if (!Array.isArray(newValue)) {
@@ -41,10 +57,6 @@ export default function MinimumDistanceSlider({ callback }: FilterState) {
       setValue2(newValue as number[]);
     }
   };
-
-  // const handleCheckClick = () =>{
-
-  // }
 
   return (
     <div className="flex items-center w-full">

@@ -6,13 +6,8 @@ import SearchBar from '@components/filters/searchBar';
 import React, { useEffect, useState } from 'react';
 import { Country } from '../app/page';
 import Image from 'next/image';
-import { current } from '@reduxjs/toolkit';
 
-interface QuickCallback{
-  function: (filters: FilterOptions[]) => Country[]
-}
-
-export function fltrObjectAndIndex(filterName: String, filterOptions: FilterOptions[]) {
+export function fltrObjectAndIndex(filterName: string, filterOptions: FilterOptions[]) {
   const indexToUpdate = filterOptions.findIndex(
     (option) => option.filterName.toLocaleLowerCase() === filterName.toLocaleLowerCase()
   );
@@ -26,93 +21,109 @@ export function fltrObjectAndIndex(filterName: String, filterOptions: FilterOpti
   };
 }
 
-
-
-const filtersApply = (filterOps: FilterOptions[])=>{
-switch(filterOptions.filterName.toLocaleLowerCase()){
-  case 'population':{
-    
-  }
-  case 'borders':{
-
-  }
-  case 'paginate':{
-
-  }
-  case 'region'
-  }
-}
-
 function CountriesDisplay({ countries }: { countries: Country[] }) {
   const [filteredCountries, setFilteredCountries] = useState<Country[]>(countries);
 
-  const filterCallback = (filterOptions: FilterOptions[], qc: QuickCallback ) => {
-      const countries = [...filteredCountries]
-      //
-    };
+  useEffect(() => {
+    console.log('Filtered countries: ' + filteredCountries.length);
+  }, [filteredCountries]);
 
-   
- 
+  //need fallback if there is no
+  const filterCallback = (filterOptions: FilterOptions[]) => {
+    console.log('callback called from countries display');
+    const filteredCountries = countries.filter((country) => {
+      return filterOptions.every((filter) => {
+        // Apply each filter to the country and return true if it passes all filters
+        switch (filter.filterName.toLocaleLowerCase()) {
+          case 'region':
+            return (
+              filter.value &&
+              typeof filter.value === 'object' &&
+              (filter.value as string[]).includes(country?.region || '')
+            );
+          case 'borders':
+            return (
+              country.borders &&
+              country.borders.every((border) =>
+                (filter.value as string[]).some(
+                  (filterValue) => filterValue.toLowerCase() === border.toLowerCase()
+                )
+              )
+            );
+          case 'population':
+            return (
+              country.population &&
+              country.population >= (filter.value as [number, number])[0] &&
+              country.population <= (filter.value as [number, number])[1]
+            );
+          default:
+            return true;
+        }
+      });
+    });
 
-    return (
-      <div>
-        <div className="w-full flex flex-wrap pt-5">
-          <div className="w-[90%] flex mx-auto flex-wrap changeCol mb-3">
-            <div className="w-[50%] min-w-[200px] bg-yellow-300">
-              <div className="flex flex-col align-middle">
-                <SearchBar />
-              </div>
-            </div>
-            <div className="w-[50%] min-w-[250px] bg-purple-600 flex items-end">
-              <FilterComponent />
-            </div>
-          </div>
-          <div className="w-full flex justify-center pt-4 sm:pt-0 align-middle">
-            <TablePaginationDemo resultCount={countries.length} />
-          </div>
-          {filteredCountries.map((country, index) => (
-            <div key={`${country.name.common}-${index}`} className="flex mx-auto card-center">
-              <CountryLink href={`/${country.name.common.trim().split(' ').join('+')}`}>
-                <div
-                  className="country flex w-56 h-64 flex-col bg-slate-600 
-          rounded-md shadow-md shadow-black m-4 cursor-pointer cards-sm">
-                  <div className="h-1/2 bg-gray-600 flex justify-center items-center rounded-md flex-auto">
-                    <Image
-                      className="object-cover w-full h-full rounded-md"
-                      src={country.flags?.svg ?? country.flags?.png ?? ''}
-                      alt={country.name.common}
-                      width={44}
-                      height={44}
-                    />
-                  </div>
-                  <div className="h-1/2 flex flex-col justify-center flex-auto">
-                    <h5 className="text-start pl-4 py-1 text-sm mb-1 leading-3 text-white sm:text-lg">
-                      {country.name.common.length > 20
-                        ? `${country.name.common.slice(0, 20)}...`
-                        : `${country.name.common}`}
-                    </h5>
-                    <ul className="country-info text-start pl-4">
-                      <li className="">
-                        <span>Population:</span>
-                        {country.population}
-                      </li>
-                      <li>
-                        <span>Region:</span>
-                        {country.region}
-                      </li>
-                      <li>
-                        <span>Capital: </span>
-                        {country.capital}
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </CountryLink>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
+    setFilteredCountries(filteredCountries);
   };
+
+  return (
+    <div>
+      <div className="w-full flex flex-wrap pt-5">
+        <div className="w-[90%] flex mx-auto flex-wrap changeCol mb-3">
+          <div className="w-[50%] min-w-[200px] bg-yellow-300">
+            <div className="flex flex-col align-middle">
+              <SearchBar />
+            </div>
+          </div>
+          <div className="w-[50%] min-w-[250px] bg-purple-600 flex items-end">
+            <FilterComponent filterCallback={filterCallback} />
+          </div>
+        </div>
+        <div className="w-full flex justify-center pt-4 sm:pt-0 align-middle">
+          <TablePaginationDemo resultCount={countries.length} />
+        </div>
+        {filteredCountries.map((country, index) => (
+          <div key={`${country.name.common}-${index}`} className="flex mx-auto card-center">
+            <CountryLink href={`/${country.name.common.trim().split(' ').join('+')}`}>
+              <div
+                className="country flex w-56 h-64 flex-col bg-slate-600 
+          rounded-md shadow-md shadow-black m-4 cursor-pointer cards-sm">
+                <div className="h-1/2 bg-gray-600 flex justify-center items-center rounded-md flex-auto">
+                  <Image
+                    className="object-cover w-full h-full rounded-md"
+                    src={country.flags?.svg ?? country.flags?.png ?? ''}
+                    alt={country.name.common}
+                    width={44}
+                    height={44}
+                  />
+                </div>
+                <div className="h-1/2 flex flex-col justify-center flex-auto">
+                  <h5 className="text-start pl-4 py-1 text-sm mb-1 leading-3 text-white sm:text-lg">
+                    {country.name.common.length > 20
+                      ? `${country.name.common.slice(0, 20)}...`
+                      : `${country.name.common}`}
+                  </h5>
+                  <ul className="country-info text-start pl-4">
+                    <li className="">
+                      <span>Population:</span>
+                      {country.population}
+                    </li>
+                    <li>
+                      <span>Region:</span>
+                      {country.region}
+                    </li>
+                    <li>
+                      <span>Capital: </span>
+                      {country.capital}
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </CountryLink>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default CountriesDisplay;
