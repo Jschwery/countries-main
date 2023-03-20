@@ -24,10 +24,10 @@ type FilterComponentProps = {
 
 function FilterComponent({ filterCallback }: FilterComponentProps) {
   const filters: FilterOptions[] = [
-    { filterName: 'Region', value: [''], active: false, filterEdit: false },
-    { filterName: 'Borders', value: [''], active: false, filterEdit: false },
+    { filterName: 'region', value: [''], active: false, filterEdit: false },
+    { filterName: 'borders', value: [''], active: false, filterEdit: false },
     {
-      filterName: 'Population',
+      filterName: 'population',
       value: [0, 0],
       active: false,
       filterEdit: false
@@ -40,14 +40,12 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
   const [filterButtonShown, setFilterButtonShown] = useState(true);
 
   useEffect(() => {
-    console.log('options changed in filter component: ');
-
     options.forEach((option) => console.log(option));
-    // options.some((option) => {
-    //   option.active;
-    // })
-    //   ? filterCallback(options)
-    //   : console.log('no filters active');
+    options.some((option) => {
+      option.active;
+    })
+      ? filterCallback(options)
+      : console.log('no filters active');
   }, [options]);
 
   const filterOptions = (filter: FilterOptions[], filterName: string) => {
@@ -55,10 +53,12 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
 
     switch (filterName.toLocaleLowerCase()) {
       case 'population':
+        console.log('within population callback');
+
         const updatedOptionPopulation = {
           ...(options ? options[filterAndIndex.index ?? -1] : {}),
           value: filterAndIndex.filterOption?.value ?? [0, 0],
-          filterName: filterAndIndex.filterOption?.filterName ?? 'Population'
+          filterName: filterAndIndex.filterOption?.filterName ?? 'population'
         };
         const updatedOptionsPopulation = [
           ...options.slice(0, filterAndIndex.index),
@@ -71,7 +71,7 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
         const updatedOptionRegion = {
           ...(options ? options[filterAndIndex.index ?? -1] : {}),
           value: filterAndIndex.filterOption?.value ?? [''],
-          filterName: filterAndIndex.filterOption?.filterName ?? ''
+          filterName: filterAndIndex.filterOption?.filterName ?? 'region'
         };
         const updatedOptionsRegion = [
           ...options.slice(0, filterAndIndex.index),
@@ -84,7 +84,7 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
         const updatedOptionBorders = {
           ...(options ? options[filterAndIndex.index ?? -1] : {}),
           value: filterAndIndex.filterOption?.value ?? [''],
-          filterName: filterAndIndex.filterOption?.filterName ?? ''
+          filterName: filterAndIndex.filterOption?.filterName ?? 'border'
         };
         const updatedOptionsBorders = [
           ...options.slice(0, filterAndIndex.index),
@@ -110,7 +110,9 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
   };
 
   const filterClicked = (name: string) => {
-    const index = options.findIndex((x) => x.filterName === name);
+    const index = options.findIndex(
+      (x) => x.filterName.toLocaleLowerCase() === name.toLocaleLowerCase()
+    );
     setFilterButtonShown(!filterButtonShown);
     if (index !== -1) {
       const updatedOption = {
@@ -121,7 +123,8 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
       const updatedOptions = [...options];
       updatedOptions[index] = updatedOption;
       setOptions(updatedOptions);
-      const updatedQueue = handleSetQueue(updatedOption.filterName);
+      const updatedQueue = handleSetQueue(updatedOption.filterName.toLocaleLowerCase());
+
       setSelectedOption(showOptionSlider(updatedQueue) || null);
     }
   };
@@ -138,22 +141,26 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
 
   const showOptionSlider = (queue: string[]) => {
     const name = queue[0];
-    const option = options.find((x) => x.filterName === name);
 
-    switch (option?.filterName) {
-      case 'Population':
+    const option = options.find((x) => x.filterName === name);
+    switch (option?.filterName.toLocaleLowerCase()) {
+      case 'population':
         return (
           <div className="flex align-middle justify-center items-center w-full bg-amber-400">
             <MinimumDistanceSlider filterOps={options} callback={filterOptions} />
+            <CheckIcon
+              onClick={handleCheckClick}
+              className=" w-[30px] h-[30px] text-green-600 hover:text-green-400 transition-all hover:cursor-pointer pb-1 px-0.5 ml-1.5"
+            />
           </div>
         );
-      case 'Region':
+      case 'region':
         return (
           <div className="flex align-middle justify-center items-center w-full bg-amber-400">
             <SelectAutoWidth filterOps={options} callback={filterOptions} title="Region" />
           </div>
         );
-      case 'Borders':
+      case 'borders':
         return (
           <div className="flex align-middle justify-center items-center w-full bg-amber-400">
             <SelectAutoWidth filterOps={options} callback={filterOptions} title="Borders" />
@@ -166,7 +173,7 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
 
   return (
     <div className="flex flex-col sm:flex-row w-full justify-start sm:justify-end items-start">
-      {selectedOption ? selectedOption : ''}
+      {selectedOption ? selectedOption : <></>}
       <div id="filter-button-container" className="relative md:pl-2 py-4 items-end flex">
         {filterButtonShown && (
           <button
@@ -198,7 +205,7 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
                   <li
                     key={options.filterName + '-' + iteration}
                     className="hover:bg-slate-700 hover:opacity-60 p-2 leading-4 text-lg cursor-pointer flex truncate"
-                    onClick={() => filterClicked(options.filterName)}>
+                    onClick={() => filterClicked(options.filterName.toLocaleLowerCase())}>
                     <div className="flex items-center justify-between">
                       <div className="w-[175px]">
                         <span className=" px-1">{options.filterName}</span>

@@ -83,11 +83,6 @@ export default function MinimumDistanceSlider({ callback, filterOps }: FilterSta
           )
         }}
       />
-
-      <CheckIcon
-        onClick={handleCheckClick}
-        className=" w-[30px] h-[30px] text-green-600 hover:text-green-400 transition-all hover:cursor-pointer pb-1 px-0.5 ml-1.5"
-      />
     </div>
   );
 }
