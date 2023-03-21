@@ -17,12 +17,8 @@ function GlobalCountries({ name }: CountryName) {
     const fetchData = async () => {
       try {
         const fetchedCountries = await fetchCountries();
-        const foundCountry = fetchedCountries.find(
-          (country) => country.name.common === name
-        );
+        const foundCountry = fetchedCountries.find((country) => country.name.common === name);
         if (foundCountry) {
-            console.log('found country!')
-            console.log(foundCountry)
           dispatch({ type: 'ADD_COUNTRY', payload: foundCountry });
         }
       } catch (error) {
@@ -32,11 +28,8 @@ function GlobalCountries({ name }: CountryName) {
     fetchData();
   }, [name, dispatch]);
 
-console.log(state.globalCountries)
-  return (
-    <>
-    </>
-  );
+  console.log(state.globalCountries);
+  return <></>;
 }
 
 export default GlobalCountries;

@@ -17,9 +17,9 @@ const MenuProps = {
   PaperProps: {
     style: {
       maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
+      width: 250
+    }
+  }
 };
 
 const names = [
@@ -32,7 +32,7 @@ const names = [
   'Miriam Wagner',
   'Bradley Wilkerson',
   'Virginia Andrews',
-  'Kelly Snyder',
+  'Kelly Snyder'
 ];
 
 function getStyles(name: string, personName: readonly string[], theme: Theme) {
@@ -40,31 +40,31 @@ function getStyles(name: string, personName: readonly string[], theme: Theme) {
     fontWeight:
       personName.indexOf(name) === -1
         ? theme.typography.fontWeightRegular
-        : theme.typography.fontWeightMedium,
+        : theme.typography.fontWeightMedium
   };
 }
 
-interface ChipTypes{
+interface ChipTypes {
   title: string;
 }
 
-export default function MultipleSelectChip({title, callback}: ChipTypes & FilterState) {
+export default function MultipleSelectChip({ title, callback }: ChipTypes & FilterState) {
   const theme = useTheme();
   const [personName, setPersonName] = React.useState<string[]>([]);
 
   const handleChange = (event: SelectChangeEvent<typeof personName>) => {
     const {
-      target: { value },
+      target: { value }
     } = event;
     setPersonName(
       // On autofill we get a stringified value.
-      typeof value === 'string' ? value.split(',') : value,
+      typeof value === 'string' ? value.split(',') : value
     );
   };
 
   return (
-    <div className='relative flex items-center w-full justify-start sm:justify-end '>
-      <FormControl sx={{ flexGrow: 1, maxWidth: '60%'}}>
+    <div className="relative flex items-center w-full justify-start sm:justify-end ">
+      <FormControl sx={{ flexGrow: 1 }}>
         <InputLabel id="demo-multiple-chip-label">{title}</InputLabel>
         <Select
           labelId="demo-multiple-chip-label"
@@ -72,7 +72,7 @@ export default function MultipleSelectChip({title, callback}: ChipTypes & Filter
           multiple
           value={personName}
           onChange={handleChange}
-          input={<OutlinedInput id="select-multiple-chip" label="Chip"/>}
+          input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
           renderValue={(selected) => (
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
               {selected.map((value) => (
@@ -80,20 +80,14 @@ export default function MultipleSelectChip({title, callback}: ChipTypes & Filter
               ))}
             </Box>
           )}
-          MenuProps={MenuProps}
-        >
+          MenuProps={MenuProps}>
           {names.map((name) => (
-            <MenuItem
-              key={name}
-              value={name}
-              style={getStyles(name, personName, theme)}
-            >
+            <MenuItem key={name} value={name} style={getStyles(name, personName, theme)}>
               {name}
             </MenuItem>
           ))}
         </Select>
       </FormControl>
-      <CheckIcon className='w-[24px] h-[24px] text-green-400 hover:cursor-pointer' onClick={()=> callback} />
     </div>
   );
 }

@@ -39,7 +39,23 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
   const [selectedOption, setSelectedOption] = useState<JSX.Element | null>(null);
   const [filterButtonShown, setFilterButtonShown] = useState(true);
 
+  //need the callback to
+
+  /*
+
+    const updatedFilters = [...filterOps];
+    updatedFilters[filterAndIndex.index].active = !updatedFilters[filterAndIndex.index].active;
+    updatedFilters[filterAndIndex.index].filterEdit =
+      !updatedFilters[filterAndIndex.index].filterEdit;
+
+    updatedFilters.forEach((filter) => {
+      console.log(filter);
+    });
+  */
+
   useEffect(() => {
+    console.log('for each after this in useEffect');
+
     options.forEach((option) => console.log(option));
     options.some((option) => {
       option.active;
@@ -48,7 +64,11 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
       : console.log('no filters active');
   }, [options]);
 
-  const filterOptions = (filter: FilterOptions[], filterName: string) => {
+  const filterOptions = (
+    filter: FilterOptions[],
+    filterName: string,
+    valuePassed: [number, number] | ['']
+  ) => {
     const filterAndIndex = fltrObjectAndIndex(filterName, filter);
 
     switch (filterName.toLocaleLowerCase()) {
@@ -57,8 +77,15 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
 
         const updatedOptionPopulation = {
           ...(options ? options[filterAndIndex.index ?? -1] : {}),
-          value: filterAndIndex.filterOption?.value ?? [0, 0],
+          value: valuePassed ?? [0, 0],
           filterName: filterAndIndex.filterOption?.filterName ?? 'population'
+
+          /*
+            const updatedFilters = [...filterOps];
+    updatedFilters[filterAndIndex.index].active = !updatedFilters[filterAndIndex.index].active;
+    updatedFilters[filterAndIndex.index].filterEdit =
+      !updatedFilters[filterAndIndex.index].filterEdit;
+          */
         };
         const updatedOptionsPopulation = [
           ...options.slice(0, filterAndIndex.index),
@@ -129,6 +156,21 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
     }
   };
 
+  const handleCheckClicked = (name: string) => {
+    console.log(name + ' was clicked');
+
+    const index = options.findIndex(
+      (x) => x.filterName.toLocaleLowerCase() === name.toLocaleLowerCase()
+    );
+    const updatedFilters = [...options];
+    updatedFilters[index].active = !updatedFilters[index].active;
+    updatedFilters[index].filterEdit = !updatedFilters[index].filterEdit;
+
+    console.log('updating filters next: ');
+
+    setOptions(updatedFilters);
+  };
+
   const removeActiveList = (name: string) => {
     const removeItem = queue.filter((q) => q !== name);
     setQueue(removeItem);
@@ -149,7 +191,7 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
           <div className="flex align-middle justify-center items-center w-full bg-amber-400">
             <MinimumDistanceSlider filterOps={options} callback={filterOptions} />
             <CheckIcon
-              onClick={handleCheckClick}
+              onClick={() => handleCheckClicked(option.filterName)}
               className=" w-[30px] h-[30px] text-green-600 hover:text-green-400 transition-all hover:cursor-pointer pb-1 px-0.5 ml-1.5"
             />
           </div>
@@ -157,13 +199,21 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
       case 'region':
         return (
           <div className="flex align-middle justify-center items-center w-full bg-amber-400">
-            <SelectAutoWidth filterOps={options} callback={filterOptions} title="Region" />
+            {/* <SelectAutoWidth filterOps={options} callback={filterOptions} title="Region" /> */}
+            <CheckIcon
+              onClick={() => handleCheckClicked('region')}
+              className=" w-[30px] h-[30px] text-green-600 hover:text-green-400 transition-all hover:cursor-pointer pb-1 px-0.5 ml-1.5"
+            />
           </div>
         );
       case 'borders':
         return (
           <div className="flex align-middle justify-center items-center w-full bg-amber-400">
             <SelectAutoWidth filterOps={options} callback={filterOptions} title="Borders" />
+            <CheckIcon
+              onClick={() => handleCheckClicked('borders')}
+              className=" w-[30px] h-[30px] text-green-600 hover:text-green-400 transition-all hover:cursor-pointer pb-1 px-0.5 ml-1.5"
+            />
           </div>
         );
       default:
