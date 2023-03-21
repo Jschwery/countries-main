@@ -48,18 +48,24 @@ interface ChipTypes {
   title: string;
 }
 
-export default function MultipleSelectChip({ title, callback }: ChipTypes & FilterState) {
+export default function MultipleSelectChip({
+  title,
+  callback,
+  filterOps
+}: ChipTypes & FilterState) {
   const theme = useTheme();
-  const [personName, setPersonName] = React.useState<string[]>([]);
+  const [bordersOrRegion, setBordersOrRegion] = React.useState<string[]>([]);
 
-  const handleChange = (event: SelectChangeEvent<typeof personName>) => {
+  React.useEffect(() => {
+    callback(filterOps, title.toLocaleLowerCase(), bordersOrRegion);
+  }, [bordersOrRegion]);
+
+  const handleChange = (event: SelectChangeEvent<typeof bordersOrRegion>) => {
     const {
       target: { value }
     } = event;
-    setPersonName(
-      // On autofill we get a stringified value.
-      typeof value === 'string' ? value.split(',') : value
-    );
+    const updatedBordersOrRegion = typeof value === 'string' ? value.split(',') : value;
+    setBordersOrRegion(updatedBordersOrRegion);
   };
 
   return (
@@ -70,7 +76,7 @@ export default function MultipleSelectChip({ title, callback }: ChipTypes & Filt
           labelId="demo-multiple-chip-label"
           id="demo-multiple-chip"
           multiple
-          value={personName}
+          value={bordersOrRegion}
           onChange={handleChange}
           input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
           renderValue={(selected) => (
@@ -82,7 +88,7 @@ export default function MultipleSelectChip({ title, callback }: ChipTypes & Filt
           )}
           MenuProps={MenuProps}>
           {names.map((name) => (
-            <MenuItem key={name} value={name} style={getStyles(name, personName, theme)}>
+            <MenuItem key={name} value={name} style={getStyles(name, bordersOrRegion, theme)}>
               {name}
             </MenuItem>
           ))}

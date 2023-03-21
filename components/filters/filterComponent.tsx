@@ -24,8 +24,8 @@ type FilterComponentProps = {
 
 function FilterComponent({ filterCallback }: FilterComponentProps) {
   const filters: FilterOptions[] = [
-    { filterName: 'region', value: [''], active: false, filterEdit: false },
-    { filterName: 'borders', value: [''], active: false, filterEdit: false },
+    { filterName: 'region', value: [], active: false, filterEdit: false },
+    { filterName: 'borders', value: [], active: false, filterEdit: false },
     {
       filterName: 'population',
       value: [0, 0],
@@ -38,20 +38,6 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
   const [queue, setQueue] = useState<string[]>([]);
   const [selectedOption, setSelectedOption] = useState<JSX.Element | null>(null);
   const [filterButtonShown, setFilterButtonShown] = useState(true);
-
-  //need the callback to
-
-  /*
-
-    const updatedFilters = [...filterOps];
-    updatedFilters[filterAndIndex.index].active = !updatedFilters[filterAndIndex.index].active;
-    updatedFilters[filterAndIndex.index].filterEdit =
-      !updatedFilters[filterAndIndex.index].filterEdit;
-
-    updatedFilters.forEach((filter) => {
-      console.log(filter);
-    });
-  */
 
   useEffect(() => {
     console.log('for each after this in useEffect');
@@ -67,7 +53,7 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
   const filterOptions = (
     filter: FilterOptions[],
     filterName: string,
-    valuePassed: [number, number] | ['']
+    valuePassed: [number, number] | string[]
   ) => {
     const filterAndIndex = fltrObjectAndIndex(filterName, filter);
 
@@ -79,13 +65,6 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
           ...(options ? options[filterAndIndex.index ?? -1] : {}),
           value: valuePassed ?? [0, 0],
           filterName: filterAndIndex.filterOption?.filterName ?? 'population'
-
-          /*
-            const updatedFilters = [...filterOps];
-    updatedFilters[filterAndIndex.index].active = !updatedFilters[filterAndIndex.index].active;
-    updatedFilters[filterAndIndex.index].filterEdit =
-      !updatedFilters[filterAndIndex.index].filterEdit;
-          */
         };
         const updatedOptionsPopulation = [
           ...options.slice(0, filterAndIndex.index),
@@ -97,7 +76,7 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
       case 'region':
         const updatedOptionRegion = {
           ...(options ? options[filterAndIndex.index ?? -1] : {}),
-          value: filterAndIndex.filterOption?.value ?? [''],
+          value: valuePassed ?? [''],
           filterName: filterAndIndex.filterOption?.filterName ?? 'region'
         };
         const updatedOptionsRegion = [
@@ -107,10 +86,12 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
         ];
         setOptions(updatedOptionsRegion);
         break;
-      case 'border':
+      case 'borders':
+        console.log('within border callback');
+
         const updatedOptionBorders = {
           ...(options ? options[filterAndIndex.index ?? -1] : {}),
-          value: filterAndIndex.filterOption?.value ?? [''],
+          value: valuePassed ?? [''],
           filterName: filterAndIndex.filterOption?.filterName ?? 'border'
         };
         const updatedOptionsBorders = [
@@ -199,7 +180,7 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
       case 'region':
         return (
           <div className="flex align-middle justify-center items-center w-full bg-amber-400">
-            {/* <SelectAutoWidth filterOps={options} callback={filterOptions} title="Region" /> */}
+            <SelectAutoWidth filterOps={options} callback={filterOptions} title="Region" />
             <CheckIcon
               onClick={() => handleCheckClicked('region')}
               className=" w-[30px] h-[30px] text-green-600 hover:text-green-400 transition-all hover:cursor-pointer pb-1 px-0.5 ml-1.5"

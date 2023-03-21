@@ -13,7 +13,7 @@ export interface FilterState {
   callback: (
     filterOption: FilterOptions[],
     nameFilter: string,
-    valuePassed: [number, number] | ['']
+    valuePassed: [number, number] | string[]
   ) => void;
   filterOps: FilterOptions[];
 }
