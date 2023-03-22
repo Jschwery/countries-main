@@ -22,47 +22,64 @@ export function fltrObjectAndIndex(filterName: string, filterOptions: FilterOpti
 }
 
 function CountriesDisplay({ countries }: { countries: Country[] }) {
+  console.log('the countries display is here: ' + countries.length);
+
   const [filteredCountries, setFilteredCountries] = useState<Country[]>(countries);
 
   useEffect(() => {
-    console.log('Filtered countries: ' + filteredCountries.length);
-  }, [filteredCountries]);
+    console.log(
+      'filtered countries length:' +
+        filteredCountries.length +
+        '\ncountries length from props: ' +
+        countries.length
+    );
+
+    setFilteredCountries(countries);
+  }, [countries]);
 
   //need fallback if there is no
   const filterCallback = (filterOptions: FilterOptions[]) => {
-    console.log('callback called from countries display');
-    const filteredCountries = countries.filter((country) => {
-      return filterOptions.every((filter) => {
-        // Apply each filter to the country and return true if it passes all filters
-        switch (filter.filterName.toLocaleLowerCase()) {
-          case 'region':
-            return (
-              filter.value &&
-              typeof filter.value === 'object' &&
-              (filter.value as string[]).includes(country?.region || '')
-            );
-          case 'borders':
-            return (
-              country.borders &&
-              country.borders.every((border) =>
-                (filter.value as string[]).some(
-                  (filterValue) => filterValue.toLowerCase() === border.toLowerCase()
-                )
-              )
-            );
-          case 'population':
-            return (
-              country.population &&
-              country.population >= (filter.value as [number, number])[0] &&
-              country.population <= (filter.value as [number, number])[1]
-            );
-          default:
-            return true;
-        }
-      });
-    });
+    if (filterOptions.some((option) => option.active)) {
+      const countriesFiltered = filteredCountries.filter((country) => {
+        return filterOptions.every((filter) => {
+          switch (filter.filterName.toLocaleLowerCase()) {
+            case 'region':
+              console.log('top level region display');
 
-    setFilteredCountries(filteredCountries);
+              return (
+                filter.value &&
+                typeof filter.value === 'object' &&
+                (filter.value as string[]).includes(country?.region || '')
+              );
+            case 'borders':
+              console.log('top level region display');
+              return (
+                country.borders &&
+                country.borders.every((border) =>
+                  (filter.value as string[]).some(
+                    (filterValue) => filterValue.toLowerCase() === border.toLowerCase()
+                  )
+                )
+              );
+            case 'population':
+              console.log('top level region display');
+              return (
+                country.population &&
+                country.population >= (filter.value as [number, number])[0] &&
+                country.population <= (filter.value as [number, number])[1]
+              );
+            default:
+              return true;
+          }
+        });
+      });
+
+      setFilteredCountries(countriesFiltered);
+    } else {
+      console.log('within else');
+
+      setFilteredCountries(countries);
+    }
   };
 
   return (
@@ -79,7 +96,7 @@ function CountriesDisplay({ countries }: { countries: Country[] }) {
           </div>
         </div>
         <div className="w-full flex justify-center pt-4 sm:pt-0 align-middle">
-          <TablePaginationDemo resultCount={countries.length} />
+          {/* <TablePaginationDemo resultCount={countries.length} /> */}
         </div>
         {filteredCountries.map((country, index) => (
           <div key={`${country.name.common}-${index}`} className="flex mx-auto card-center">

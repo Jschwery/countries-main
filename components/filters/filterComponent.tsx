@@ -10,6 +10,7 @@ import Check, { CheckIcon } from '@heroicons/react/24/outline';
 import { PencilIcon } from '@heroicons/react/24/outline';
 import flterObjectAndIndex, { fltrObjectAndIndex } from '../countriesDisplay';
 import { PaginateType } from './paginate';
+import { filter, indexOf } from 'lodash';
 
 export interface FilterOptions {
   filterName: string;
@@ -35,14 +36,14 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
   ];
 
   const [options, setOptions] = useState<FilterOptions[]>(filters);
-  const [queue, setQueue] = useState<string[]>([]);
   const [selectedOption, setSelectedOption] = useState<JSX.Element | null>(null);
   const [filterButtonShown, setFilterButtonShown] = useState(true);
 
   useEffect(() => {
-    console.log('for each after this in useEffect');
+    options.forEach((option) => {
+      console.log(option);
+    });
 
-    options.forEach((option) => console.log(option));
     options.some((option) => {
       option.active;
     })
@@ -74,6 +75,8 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
         setOptions(updatedOptionsPopulation);
         break;
       case 'region':
+        console.log('within region callback');
+
         const updatedOptionRegion = {
           ...(options ? options[filterAndIndex.index ?? -1] : {}),
           value: valuePassed ?? [''],
@@ -106,66 +109,41 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
     }
   };
 
-  const handleSetQueue = (name: string) => {
-    if (queue.includes(name)) {
-      const filteredQueue = queue.filter((item) => item !== name);
-      setQueue(filteredQueue);
-      return filteredQueue;
-    }
-    const updatedQueue = [...queue, name];
-    setQueue(updatedQueue);
-    return updatedQueue;
-  };
-
   const filterClicked = (name: string) => {
+    setFilterButtonShown((prevstate) => !prevstate);
+
     const index = options.findIndex(
       (x) => x.filterName.toLocaleLowerCase() === name.toLocaleLowerCase()
     );
-    setFilterButtonShown(!filterButtonShown);
     if (index !== -1) {
       const updatedOption = {
         ...options[index],
-        options: !options[index].active,
-        filerEdit: !options[index].filterEdit
+        filterEdit: !options[index].filterEdit,
+        active: !options[index].filterEdit
       };
       const updatedOptions = [...options];
       updatedOptions[index] = updatedOption;
       setOptions(updatedOptions);
-      const updatedQueue = handleSetQueue(updatedOption.filterName.toLocaleLowerCase());
 
-      setSelectedOption(showOptionSlider(updatedQueue) || null);
+      setSelectedOption(showOptionSlider(name) || null);
     }
   };
 
   const handleCheckClicked = (name: string) => {
-    console.log(name + ' was clicked');
-
-    const index = options.findIndex(
-      (x) => x.filterName.toLocaleLowerCase() === name.toLocaleLowerCase()
-    );
-    const updatedFilters = [...options];
-    updatedFilters[index].active = !updatedFilters[index].active;
-    updatedFilters[index].filterEdit = !updatedFilters[index].filterEdit;
-
-    console.log('updating filters next: ');
-
-    setOptions(updatedFilters);
-  };
-
-  const removeActiveList = (name: string) => {
-    const removeItem = queue.filter((q) => q !== name);
-    setQueue(removeItem);
+    setFilterButtonShown((prevstate) => !prevstate);
+    setSelectedOption(null);
   };
 
   const handleHideContainer = () => {
     setSelectedOption(null);
-    setQueue([]);
   };
 
-  const showOptionSlider = (queue: string[]) => {
-    const name = queue[0];
+  const showOptionSlider = (queue: string) => {
+    const option = options.find(
+      (x) => x.filterName.toLocaleLowerCase() === queue.toLocaleLowerCase()
+    );
+    // console.log('the options Index:' + optionIndex);
 
-    const option = options.find((x) => x.filterName === name);
     switch (option?.filterName.toLocaleLowerCase()) {
       case 'population':
         return (
@@ -223,43 +201,47 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
             </svg>
           </button>
         )}
-
-        <div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-slate-700 filters-sm z-20">
-          <div
-            className="py-1 transition duration-500 ease-in border-transparent hover:border-lime-500"
-            role="menu"
-            aria-orientation="vertical"
-            aria-labelledby="menu-button">
-            {
-              <ul className="">
-                {options.map((options, iteration) => (
-                  <li
-                    key={options.filterName + '-' + iteration}
-                    className="hover:bg-slate-700 hover:opacity-60 p-2 leading-4 text-lg cursor-pointer flex truncate"
-                    onClick={() => filterClicked(options.filterName.toLocaleLowerCase())}>
-                    <div className="flex items-center justify-between">
-                      <div className="w-[175px]">
-                        <span className=" px-1">{options.filterName}</span>
+        {filterButtonShown && (
+          <div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-slate-700 filters-sm z-20">
+            <div
+              className="py-1 transition duration-500 ease-in border-transparent hover:border-lime-500"
+              role="menu"
+              aria-orientation="vertical"
+              aria-labelledby="menu-button">
+              {
+                <ul className="">
+                  {options.map((options, iteration) => (
+                    <li
+                      key={options.filterName + '-' + iteration}
+                      className="hover:bg-slate-700 hover:opacity-60 p-2 leading-4 text-lg cursor-pointer truncate"
+                      onClick={() => filterClicked(options.filterName.toLocaleLowerCase())}>
+                      <div className="flex items-center bg-green-900 justify-around">
+                        {options.filterEdit && options.active ? (
+                          <div className="flex grow justify-between items-center">
+                            <div className="flex align-middle pl-0.5 pb-0.5">
+                              <span className="px-1">{options.filterName}</span>
+                            </div>
+                            <div className="flex items-center px-1">
+                              <PencilIcon className="w-[22px] h-[22px] text-yellow-300 hover:text-yellow-200 hover:scale-105" />
+                              <CheckCircleIcon className="text-green-500 w-[25px] h-[25px]" />
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-center">
+                            <div className="w-[175px]">
+                              <span className="px-1">{options.filterName}</span>
+                            </div>
+                            <CheckCircleIcon className="text-gray-500 w-[25px] h-[25px]" />
+                          </div>
+                        )}
                       </div>
-                      {options.filterEdit && options.active ? (
-                        <div>
-                          <PencilIcon className=" w-[22px] h-[22px] text-yellow-300" />
-                        </div>
-                      ) : (
-                        <></>
-                      )}
-                      {options.active ? (
-                        <CheckCircleIcon className=" text-green-500 w-[25px] h-[25px]" />
-                      ) : (
-                        <CheckCircleIcon className=" text-gray-500 w-[25px] h-[25px]" />
-                      )}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            }
+                    </li>
+                  ))}
+                </ul>
+              }
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
