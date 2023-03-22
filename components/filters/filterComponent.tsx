@@ -95,7 +95,7 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
         const updatedOptionBorders = {
           ...(options ? options[filterAndIndex.index ?? -1] : {}),
           value: valuePassed ?? [''],
-          filterName: filterAndIndex.filterOption?.filterName ?? 'border'
+          filterName: filterAndIndex.filterOption?.filterName ?? 'borders'
         };
         const updatedOptionsBorders = [
           ...options.slice(0, filterAndIndex.index),
@@ -115,11 +115,13 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
     const index = options.findIndex(
       (x) => x.filterName.toLocaleLowerCase() === name.toLocaleLowerCase()
     );
+    console.log('index clicked: ' + index);
+
     if (index !== -1) {
       const updatedOption = {
         ...options[index],
         filterEdit: !options[index].filterEdit,
-        active: !options[index].filterEdit
+        active: !options[index].active
       };
       const updatedOptions = [...options];
       updatedOptions[index] = updatedOption;
@@ -160,7 +162,7 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
           <div className="flex align-middle justify-center items-center w-full bg-amber-400">
             <SelectAutoWidth filterOps={options} callback={filterOptions} title="Region" />
             <CheckIcon
-              onClick={() => handleCheckClicked('region')}
+              onClick={() => handleCheckClicked(option.filterName)}
               className=" w-[30px] h-[30px] text-green-600 hover:text-green-400 transition-all hover:cursor-pointer pb-1 px-0.5 ml-1.5"
             />
           </div>
@@ -170,7 +172,7 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
           <div className="flex align-middle justify-center items-center w-full bg-amber-400">
             <SelectAutoWidth filterOps={options} callback={filterOptions} title="Borders" />
             <CheckIcon
-              onClick={() => handleCheckClicked('borders')}
+              onClick={() => handleCheckClicked(option.filterName)}
               className=" w-[30px] h-[30px] text-green-600 hover:text-green-400 transition-all hover:cursor-pointer pb-1 px-0.5 ml-1.5"
             />
           </div>
