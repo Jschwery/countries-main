@@ -28,7 +28,6 @@ function GlobalCountries({ name }: CountryName) {
     fetchData();
   }, [name, dispatch]);
 
-  console.log(state.globalCountries);
   return <></>;
 }
 
