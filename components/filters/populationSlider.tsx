@@ -7,6 +7,7 @@ import { useGlobalContext } from '@global/provider';
 import { FilterOptions } from './filterComponent';
 import { useState, useEffect } from 'react';
 import { fltrObjectAndIndex } from '@components/countriesDisplay';
+import { log } from 'console';
 const minDistance = 10;
 
 export interface FilterState {
@@ -19,6 +20,15 @@ export interface FilterState {
 }
 
 export default function MinimumDistanceSlider({ callback, filterOps }: FilterState) {
+  filterOps.forEach((filterOption) => {
+    console.log('==========================================');
+    console.log('FILTER OPS RECIEVED BY SLIDER');
+    console.log('filter: ' + filterOption.filterName);
+    console.log('active: ' + filterOption.active);
+    console.log('value: ' + filterOption.value);
+    console.log('==========================================');
+  });
+
   const [value2, setValue2] = useState<number[]>([0, 15]);
   const populationFilterIndex = filterOps.findIndex(
     (filter) => filter.filterName.toLocaleLowerCase() === 'population'
@@ -43,7 +53,12 @@ export default function MinimumDistanceSlider({ callback, filterOps }: FilterSta
 
     const updatedFilters = [...filterOps];
     updatedFilters[populationFilterIndex].value = [value2[0], value2[1]];
-
+    updatedFilters.forEach((filter) => {
+      console.log('within populationSlider');
+      console.log('filter: ' + filter.filterName);
+      console.log('active: ' + filter.active);
+      console.log('value: ' + filter.value);
+    });
     callback(updatedFilters, 'population', [value2[0], value2[1]]);
   };
 

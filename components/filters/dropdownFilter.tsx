@@ -57,7 +57,12 @@ export default function MultipleSelectChip({
   const [bordersOrRegion, setBordersOrRegion] = React.useState<string[]>([]);
 
   React.useEffect(() => {
-    callback(filterOps, title.toLocaleLowerCase(), bordersOrRegion);
+    const dropDownFitlerIndex = filterOps.findIndex(
+      (filter) => filter.filterName.toLocaleLowerCase() === title.toLocaleLowerCase()
+    );
+    const updatedFilters = [...filterOps];
+    updatedFilters[dropDownFitlerIndex].value = bordersOrRegion;
+    callback(updatedFilters, title.toLocaleLowerCase(), bordersOrRegion);
   }, [bordersOrRegion]);
 
   const handleChange = (event: SelectChangeEvent<typeof bordersOrRegion>) => {

@@ -15,6 +15,7 @@ export function fltrObjectAndIndex(filterName: string, filterOptions: FilterOpti
   const foundFilter = filterOptions.find((op) => {
     op.filterName.toLocaleLowerCase() === filterName.toLocaleLowerCase();
   });
+
   return {
     index: indexToUpdate,
     filterOption: foundFilter

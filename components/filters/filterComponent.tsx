@@ -11,6 +11,7 @@ import { PencilIcon } from '@heroicons/react/24/outline';
 import flterObjectAndIndex, { fltrObjectAndIndex } from '../countriesDisplay';
 import { PaginateType } from './paginate';
 import { filter, indexOf } from 'lodash';
+import { log } from 'console';
 
 export interface FilterOptions {
   filterName: string;
@@ -40,9 +41,13 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
   const [filterButtonShown, setFilterButtonShown] = useState(true);
 
   useEffect(() => {
+    console.log('==================================================================');
+    console.log('CURRENT STATE\n');
+
     options.forEach((option) => {
       console.log(option);
     });
+    console.log('==================================================================');
 
     options.some((option) => {
       option.active;
@@ -60,13 +65,15 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
 
     switch (filterName.toLocaleLowerCase()) {
       case 'population':
-        console.log('within population callback');
-
         const updatedOptionPopulation = {
           ...(options ? options[filterAndIndex.index ?? -1] : {}),
           value: valuePassed ?? [0, 0],
           filterName: filterAndIndex.filterOption?.filterName ?? 'population'
         };
+        console.log('values that were used: ' + valuePassed);
+        console.log('updatedOptionPopulation:');
+        console.log(updatedOptionPopulation);
+
         const updatedOptionsPopulation = [
           ...options.slice(0, filterAndIndex.index),
           updatedOptionPopulation,
@@ -82,6 +89,11 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
           value: valuePassed ?? [''],
           filterName: filterAndIndex.filterOption?.filterName ?? 'region'
         };
+
+        console.log('values that were used: ' + valuePassed);
+        console.log('updatedOptionRegion:');
+        console.log(updatedOptionRegion);
+
         const updatedOptionsRegion = [
           ...options.slice(0, filterAndIndex.index),
           updatedOptionRegion,
@@ -97,6 +109,10 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
           value: valuePassed ?? [''],
           filterName: filterAndIndex.filterOption?.filterName ?? 'borders'
         };
+        console.log('values that were used: ' + valuePassed);
+        console.log('updatedOptionRegion:');
+        console.log(updatedOptionBorders);
+
         const updatedOptionsBorders = [
           ...options.slice(0, filterAndIndex.index),
           updatedOptionBorders,
@@ -116,6 +132,8 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
       (x) => x.filterName.toLocaleLowerCase() === name.toLocaleLowerCase()
     );
     console.log('index clicked: ' + index);
+    console.log('FILTERCLICKED:');
+    console.log(options[index].filterName);
 
     if (index !== -1) {
       const updatedOption = {
@@ -125,8 +143,13 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
       };
       const updatedOptions = [...options];
       updatedOptions[index] = updatedOption;
-      setOptions(updatedOptions);
 
+      updatedOptions.forEach((option) => {
+        console.log('options within filter clicked: ');
+        console.log(option.filterName);
+        console.log('active: ' + option.active);
+      });
+      setOptions(updatedOptions);
       setSelectedOption(showOptionSlider(name) || null);
     }
   };
