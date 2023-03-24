@@ -49,6 +49,12 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
     });
     console.log('==================================================================');
 
+    options.forEach((option) => {
+      option.active
+        ? console.log(option.filterName + ' is active!')
+        : console.log(option.filterName + ' is not active!');
+    });
+
     options.some((option) => {
       option.active;
     })
@@ -70,9 +76,6 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
           value: valuePassed ?? [0, 0],
           filterName: filterAndIndex.filterOption?.filterName ?? 'population'
         };
-        console.log('values that were used: ' + valuePassed);
-        console.log('updatedOptionPopulation:');
-        console.log(updatedOptionPopulation);
 
         const updatedOptionsPopulation = [
           ...options.slice(0, filterAndIndex.index),
@@ -90,10 +93,6 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
           filterName: filterAndIndex.filterOption?.filterName ?? 'region'
         };
 
-        console.log('values that were used: ' + valuePassed);
-        console.log('updatedOptionRegion:');
-        console.log(updatedOptionRegion);
-
         const updatedOptionsRegion = [
           ...options.slice(0, filterAndIndex.index),
           updatedOptionRegion,
@@ -109,9 +108,6 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
           value: valuePassed ?? [''],
           filterName: filterAndIndex.filterOption?.filterName ?? 'borders'
         };
-        console.log('values that were used: ' + valuePassed);
-        console.log('updatedOptionRegion:');
-        console.log(updatedOptionBorders);
 
         const updatedOptionsBorders = [
           ...options.slice(0, filterAndIndex.index),
@@ -131,9 +127,6 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
     const index = options.findIndex(
       (x) => x.filterName.toLocaleLowerCase() === name.toLocaleLowerCase()
     );
-    console.log('index clicked: ' + index);
-    console.log('FILTERCLICKED:');
-    console.log(options[index].filterName);
 
     if (index !== -1) {
       const updatedOption = {
@@ -144,13 +137,13 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
       const updatedOptions = [...options];
       updatedOptions[index] = updatedOption;
 
-      updatedOptions.forEach((option) => {
-        console.log('options within filter clicked: ');
-        console.log(option.filterName);
-        console.log('active: ' + option.active);
-      });
       setOptions(updatedOptions);
-      setSelectedOption(showOptionSlider(name) || null);
+      if (updatedOption.active && updatedOption.filterEdit) {
+        setSelectedOption(showOptionSlider(name) || null);
+      } else {
+        setFilterButtonShown((prevstate) => !prevstate);
+        console.log('that filter was not active or the option was not active');
+      }
     }
   };
 

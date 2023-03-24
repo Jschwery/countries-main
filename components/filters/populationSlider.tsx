@@ -52,6 +52,8 @@ export default function MinimumDistanceSlider({ callback, filterOps }: FilterSta
     }
 
     const updatedFilters = [...filterOps];
+    updatedFilters[populationFilterIndex].active = true;
+    updatedFilters[populationFilterIndex].filterEdit = true;
     updatedFilters[populationFilterIndex].value = [value2[0], value2[1]];
     updatedFilters.forEach((filter) => {
       console.log('within populationSlider');
