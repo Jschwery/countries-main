@@ -10,6 +10,8 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Chip from '@mui/material/Chip';
 import { CheckIcon } from '@heroicons/react/24/solid';
 import { FilterState } from './populationSlider';
+import { fetchCountries } from '@components/helpers/countryFetch';
+import { reject } from 'lodash';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -22,18 +24,21 @@ const MenuProps = {
   }
 };
 
-const names = [
-  'Oliver Hansen',
-  'Van Henry',
-  'April Tucker',
-  'Ralph Hubbard',
-  'Omar Alexander',
-  'Carlos Abbott',
-  'Miriam Wagner',
-  'Bradley Wilkerson',
-  'Virginia Andrews',
-  'Kelly Snyder'
-];
+async function countryBordersOrRegion(name: string) {
+  try {
+    const countries = await fetchCountries();
+    switch (name.toLocaleLowerCase()) {
+      case 'region': {
+        return countries.map((country) => country.region);
+      }
+      case 'borders': {
+        return countries.map((country) => country.borders);
+      }
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 function getStyles(name: string, personName: readonly string[], theme: Theme) {
   return {
@@ -55,6 +60,15 @@ export default function MultipleSelectChip({
 }: ChipTypes & FilterState) {
   const theme = useTheme();
   const [bordersOrRegion, setBordersOrRegion] = React.useState<string[]>([]);
+  const [names, setNames] = React.useState<string[]>([]);
+
+  React.useEffect(() => {
+    const names = async (name: string) => {
+      return countryBordersOrRegion(title);
+    };
+
+    setNames();
+  }, []);
 
   React.useEffect(() => {
     const dropDownFitlerIndex = filterOps.findIndex(
@@ -62,6 +76,8 @@ export default function MultipleSelectChip({
     );
     const updatedFilters = [...filterOps];
     updatedFilters[dropDownFitlerIndex].value = bordersOrRegion;
+    updatedFilters[dropDownFitlerIndex].filterEdit = true;
+    updatedFilters[dropDownFitlerIndex].active = true;
     callback(updatedFilters, title.toLocaleLowerCase(), bordersOrRegion);
   }, [bordersOrRegion]);
 
