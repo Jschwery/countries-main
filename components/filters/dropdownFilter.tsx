@@ -12,6 +12,7 @@ import { CheckIcon } from '@heroicons/react/24/solid';
 import { FilterState } from './populationSlider';
 import { fetchCountries } from '@components/helpers/countryFetch';
 import { reject } from 'lodash';
+import { useEffect, useState } from 'react';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -29,10 +30,12 @@ async function countryBordersOrRegion(name: string) {
     const countries = await fetchCountries();
     switch (name.toLocaleLowerCase()) {
       case 'region': {
-        return countries.map((country) => country.region);
+        const regions = countries.map((country) => country.region?.split(','));
+        return [...new Set(regions)];
       }
       case 'borders': {
-        return countries.map((country) => country.borders);
+        const borders = countries.map((country) => country.borders);
+        return [...new Set(borders)];
       }
     }
   } catch (error) {
@@ -59,18 +62,21 @@ export default function MultipleSelectChip({
   filterOps
 }: ChipTypes & FilterState) {
   const theme = useTheme();
-  const [bordersOrRegion, setBordersOrRegion] = React.useState<string[]>([]);
-  const [names, setNames] = React.useState<string[]>([]);
+  const [bordersOrRegion, setBordersOrRegion] = useState<string[]>([]);
+  const [names, setNames] = useState<string[] | any[]>([]);
 
-  React.useEffect(() => {
-    const names = async (name: string) => {
-      return countryBordersOrRegion(title);
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await countryBordersOrRegion(title);
+
+      setNames(result ?? []);
     };
 
-    setNames();
-  }, []);
+    fetchData();
+    names.forEach((name) => console.log(name));
+  }, [title]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const dropDownFitlerIndex = filterOps.findIndex(
       (filter) => filter.filterName.toLocaleLowerCase() === title.toLocaleLowerCase()
     );
