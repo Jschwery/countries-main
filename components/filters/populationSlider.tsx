@@ -20,19 +20,17 @@ export interface FilterState {
 }
 
 export default function MinimumDistanceSlider({ callback, filterOps }: FilterState) {
-  filterOps.forEach((filterOption) => {
-    console.log('==========================================');
-    console.log('FILTER OPS RECIEVED BY SLIDER');
-    console.log('filter: ' + filterOption.filterName);
-    console.log('active: ' + filterOption.active);
-    console.log('value: ' + filterOption.value);
-    console.log('==========================================');
-  });
-
   const [value2, setValue2] = useState<number[]>([0, 15]);
   const populationFilterIndex = filterOps.findIndex(
     (filter) => filter.filterName.toLocaleLowerCase() === 'population'
   );
+
+  useEffect(() => {
+    //if the population filter has the filterEdit set to true then setValue2 to the values stored within the filter
+    filterOps[populationFilterIndex].filterEdit
+      ? setValue2(filterOps[populationFilterIndex].value as [number, number])
+      : [0, 15];
+  }, []);
 
   const handleChange2 = (event: Event, newValue: number | number[], activeThumb: number) => {
     if (!Array.isArray(newValue)) {

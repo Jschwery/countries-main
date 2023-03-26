@@ -30,11 +30,11 @@ async function countryBordersOrRegion(name: string) {
     const countries = await fetchCountries();
     switch (name.toLocaleLowerCase()) {
       case 'region': {
-        const regions = countries.map((country) => country.region?.split(','));
+        const regions = countries.map((country) => country.region);
         return [...new Set(regions)];
       }
       case 'borders': {
-        const borders = countries.map((country) => country.borders);
+        const borders = countries.flatMap((country) => country.borders);
         return [...new Set(borders)];
       }
     }
@@ -64,6 +64,17 @@ export default function MultipleSelectChip({
   const theme = useTheme();
   const [bordersOrRegion, setBordersOrRegion] = useState<string[]>([]);
   const [names, setNames] = useState<string[] | any[]>([]);
+  useEffect(() => {
+    const filterIndex = filterOps.findIndex(
+      (filter) => filter.filterName.toLocaleLowerCase() === title.toLocaleLowerCase()
+    );
+  }, []);
+
+  useEffect(() => {
+    console.log('names have changed');
+    console.log(names);
+    console.log('after names');
+  }, [names]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -114,8 +125,11 @@ export default function MultipleSelectChip({
             </Box>
           )}
           MenuProps={MenuProps}>
-          {names.map((name) => (
-            <MenuItem key={name} value={name} style={getStyles(name, bordersOrRegion, theme)}>
+          {names.map((name, index) => (
+            <MenuItem
+              key={name + '-' + index}
+              value={name}
+              style={getStyles(name, bordersOrRegion, theme)}>
               {name}
             </MenuItem>
           ))}
