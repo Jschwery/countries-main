@@ -49,12 +49,6 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
     });
     console.log('==================================================================');
 
-    options.forEach((option) => {
-      option.active
-        ? console.log(option.filterName + ' is active!')
-        : console.log(option.filterName + ' is not active!');
-    });
-
     options.some((option) => {
       option.active;
     })
@@ -147,13 +141,26 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
     }
   };
 
-  const handleCheckClicked = (name: string) => {
+  const handleCheckClicked = () => {
     setFilterButtonShown((prevstate) => !prevstate);
     setSelectedOption(null);
   };
 
-  const handleHideContainer = () => {
-    setSelectedOption(null);
+  const handleEdit = (name: string) => {
+    setFilterButtonShown((prevstate) => !prevstate);
+
+    const index = options.findIndex(
+      (x) => x.filterName.toLocaleLowerCase() === name.toLocaleLowerCase()
+    );
+
+    const optionsEdit = [...options];
+
+    if (optionsEdit[index].active && optionsEdit[index].filterEdit) {
+      setSelectedOption(showOptionSlider(name) || null);
+    } else {
+      setFilterButtonShown((prevstate) => !prevstate);
+      console.log('that filter was not active or the option was not active');
+    }
   };
 
   const showOptionSlider = (queue: string) => {
@@ -168,7 +175,7 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
           <div className="flex align-middle justify-center items-center w-full bg-amber-400">
             <MinimumDistanceSlider filterOps={options} callback={filterOptions} />
             <CheckIcon
-              onClick={() => handleCheckClicked(option.filterName)}
+              onClick={() => handleCheckClicked()}
               className=" w-[30px] h-[30px] text-green-600 hover:text-green-400 transition-all hover:cursor-pointer pb-1 px-0.5 ml-1.5"
             />
           </div>
@@ -178,7 +185,7 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
           <div className="flex align-middle justify-center items-center w-full bg-amber-400">
             <SelectAutoWidth filterOps={options} callback={filterOptions} title="Region" />
             <CheckIcon
-              onClick={() => handleCheckClicked(option.filterName)}
+              onClick={() => handleCheckClicked()}
               className=" w-[30px] h-[30px] text-green-600 hover:text-green-400 transition-all hover:cursor-pointer pb-1 px-0.5 ml-1.5"
             />
           </div>
@@ -188,7 +195,7 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
           <div className="flex align-middle justify-center items-center w-full bg-amber-400">
             <SelectAutoWidth filterOps={options} callback={filterOptions} title="Borders" />
             <CheckIcon
-              onClick={() => handleCheckClicked(option.filterName)}
+              onClick={() => handleCheckClicked()}
               className=" w-[30px] h-[30px] text-green-600 hover:text-green-400 transition-all hover:cursor-pointer pb-1 px-0.5 ml-1.5"
             />
           </div>
@@ -240,7 +247,10 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
                               <span className="px-1">{options.filterName}</span>
                             </div>
                             <div className="flex items-center px-1">
-                              <PencilIcon className="w-[22px] h-[22px] text-yellow-300 hover:text-yellow-200 hover:scale-105" />
+                              <PencilIcon
+                                onClick={() => handleEdit(options.filterName.toLocaleLowerCase())}
+                                className="w-[22px] h-[22px] text-yellow-300 hover:text-yellow-200 hover:scale-105"
+                              />
                               <CheckCircleIcon className="text-green-500 w-[25px] h-[25px]" />
                             </div>
                           </div>
