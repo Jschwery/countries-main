@@ -63,23 +63,39 @@ export default function MultipleSelectChip({
 }: ChipTypes & FilterState) {
   const theme = useTheme();
   const [bordersOrRegion, setBordersOrRegion] = useState<string[]>([]);
-  const [names, setNames] = useState<string[] | any[]>([]);
+  const [names, setNames] = useState<string[] | any[]>(['']);
+  useEffect(() => {
+    console.log(title);
+    console.log('filterops next');
+    filterOps.forEach((o) => {
+      console.log(o);
+    });
+
+    const filterIndex = filterOps.findIndex(
+      (filter) => filter.filterName.toLocaleLowerCase() === title.toLocaleLowerCase()
+    );
+    filterOps[filterIndex].filterEdit
+      ? setBordersOrRegion(filterOps[filterIndex].value as string[])
+      : [''];
+    console.log('HI AFTER USEEFFECT');
+  }, []);
+
   useEffect(() => {
     const filterIndex = filterOps.findIndex(
       (filter) => filter.filterName.toLocaleLowerCase() === title.toLocaleLowerCase()
     );
-  }, []);
 
-  useEffect(() => {
-    console.log('names have changed');
-    console.log(names);
-    console.log('after names');
-  }, [names]);
+    console.log('*****************************');
+    console.log(filterOps[filterIndex].value);
+
+    if (filterIndex >= 0 && filterOps[filterIndex].value) {
+      setBordersOrRegion(filterOps[filterIndex].value as string[]);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
       const result = await countryBordersOrRegion(title);
-
       setNames(result ?? []);
     };
 
