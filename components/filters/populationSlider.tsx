@@ -26,10 +26,14 @@ export default function MinimumDistanceSlider({ callback, filterOps }: FilterSta
   );
 
   useEffect(() => {
-    //if the population filter has the filterEdit set to true then setValue2 to the values stored within the filter
-    filterOps[populationFilterIndex].filterEdit
-      ? setValue2(filterOps[populationFilterIndex].value as [number, number])
+    const updatedFilters = [...filterOps];
+    updatedFilters[populationFilterIndex].active = true;
+    updatedFilters[populationFilterIndex].filterEdit = true;
+    updatedFilters[populationFilterIndex].filterEdit
+      ? setValue2(updatedFilters[populationFilterIndex].value as [number, number])
       : [0, 15];
+
+    callback(updatedFilters, 'population', [value2[0], value2[1]]);
   }, []);
 
   const handleChange2 = (event: Event, newValue: number | number[], activeThumb: number) => {
@@ -53,12 +57,7 @@ export default function MinimumDistanceSlider({ callback, filterOps }: FilterSta
     updatedFilters[populationFilterIndex].active = true;
     updatedFilters[populationFilterIndex].filterEdit = true;
     updatedFilters[populationFilterIndex].value = [value2[0], value2[1]];
-    updatedFilters.forEach((filter) => {
-      console.log('within populationSlider');
-      console.log('filter: ' + filter.filterName);
-      console.log('active: ' + filter.active);
-      console.log('value: ' + filter.value);
-    });
+
     callback(updatedFilters, 'population', [value2[0], value2[1]]);
   };
 

@@ -30,7 +30,7 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
     { filterName: 'borders', value: [], active: false, filterEdit: false },
     {
       filterName: 'population',
-      value: [0, 0],
+      value: [0, 15],
       active: false,
       filterEdit: false
     }
@@ -54,7 +54,7 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
     })
       ? filterCallback(options)
       : console.log('no filters active');
-  }, [options]);
+  }, [options, filterCallback]);
 
   const filterOptions = (
     filter: FilterOptions[],
@@ -79,8 +79,6 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
         setOptions(updatedOptionsPopulation);
         break;
       case 'region':
-        console.log('within region callback');
-
         const updatedOptionRegion = {
           ...(options ? options[filterAndIndex.index ?? -1] : {}),
           value: valuePassed ?? [''],
@@ -95,8 +93,6 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
         setOptions(updatedOptionsRegion);
         break;
       case 'borders':
-        console.log('within border callback');
-
         const updatedOptionBorders = {
           ...(options ? options[filterAndIndex.index ?? -1] : {}),
           value: valuePassed ?? [''],
@@ -129,7 +125,13 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
         active: !options[index].active
       };
       const updatedOptions = [...options];
+
       updatedOptions[index] = updatedOption;
+
+      !updatedOptions[index].active && !updatedOptions[index].filterEdit
+        ? (updatedOptions[index].value =
+            updatedOptions[index].filterName === 'population' ? [0, 15] : [])
+        : '';
 
       setOptions(updatedOptions);
       if (updatedOption.active && updatedOption.filterEdit) {
@@ -167,7 +169,6 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
     const option = options.find(
       (x) => x.filterName.toLocaleLowerCase() === queue.toLocaleLowerCase()
     );
-    // console.log('the options Index:' + optionIndex);
 
     switch (option?.filterName.toLocaleLowerCase()) {
       case 'population':
@@ -249,7 +250,7 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
                             <div className="flex items-center px-1">
                               <PencilIcon
                                 onClick={() => handleEdit(options.filterName.toLocaleLowerCase())}
-                                className="w-[22px] h-[22px] text-yellow-300 hover:text-yellow-200 hover:scale-105"
+                                className="w-[22px] h-[22px] z-50 text-yellow-300 hover:text-yellow-200 hover:scale-105"
                               />
                               <CheckCircleIcon className="text-green-500 w-[25px] h-[25px]" />
                             </div>

@@ -11,8 +11,11 @@ import Chip from '@mui/material/Chip';
 import { CheckIcon } from '@heroicons/react/24/solid';
 import { FilterState } from './populationSlider';
 import { fetchCountries } from '@components/helpers/countryFetch';
-import { reject } from 'lodash';
+import { filter, reject } from 'lodash';
 import { useEffect, useState } from 'react';
+import { log } from 'console';
+import { InformationCircleIcon } from '@heroicons/react/24/outline';
+import ToolTip from '@components/misc/toolTip';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -64,63 +67,61 @@ export default function MultipleSelectChip({
   const theme = useTheme();
   const [bordersOrRegion, setBordersOrRegion] = useState<string[]>([]);
   const [names, setNames] = useState<string[] | any[]>(['']);
-  useEffect(() => {
-    console.log(title);
-    console.log('filterops next');
-    filterOps.forEach((o) => {
-      console.log(o);
-    });
+  const [initialValue, setInitialValue] = useState<string[]>([]);
+  const [hoveredCountryName, setHoveredCountryName] = useState('');
 
-    const filterIndex = filterOps.findIndex(
-      (filter) => filter.filterName.toLocaleLowerCase() === title.toLocaleLowerCase()
-    );
-    filterOps[filterIndex].filterEdit
-      ? setBordersOrRegion(filterOps[filterIndex].value as string[])
-      : [''];
-    console.log('HI AFTER USEEFFECT');
-  }, []);
+  const handleMouseEnter = (name: string) => {
+    setHoveredCountryName(name);
+  };
 
-  useEffect(() => {
-    const filterIndex = filterOps.findIndex(
-      (filter) => filter.filterName.toLocaleLowerCase() === title.toLocaleLowerCase()
-    );
-
-    console.log('*****************************');
-    console.log(filterOps[filterIndex].value);
-
-    if (filterIndex >= 0 && filterOps[filterIndex].value) {
-      setBordersOrRegion(filterOps[filterIndex].value as string[]);
-    }
-  }, []);
-
+  const handleMouseLeave = () => {
+    setHoveredCountryName('');
+  };
   useEffect(() => {
     const fetchData = async () => {
       const result = await countryBordersOrRegion(title);
       setNames(result ?? []);
     };
+    console.log('1st useEffect - title:', title);
 
     fetchData();
-    names.forEach((name) => console.log(name));
   }, [title]);
 
   useEffect(() => {
-    const dropDownFitlerIndex = filterOps.findIndex(
+    const dropDownFilterIndex = filterOps.findIndex(
       (filter) => filter.filterName.toLocaleLowerCase() === title.toLocaleLowerCase()
     );
-    const updatedFilters = [...filterOps];
-    updatedFilters[dropDownFitlerIndex].value = bordersOrRegion;
-    updatedFilters[dropDownFitlerIndex].filterEdit = true;
-    updatedFilters[dropDownFitlerIndex].active = true;
-    callback(updatedFilters, title.toLocaleLowerCase(), bordersOrRegion);
-  }, [bordersOrRegion]);
+    const recentFilters = [...filterOps];
+
+    setInitialValue(recentFilters[dropDownFilterIndex].value as string[]);
+  }, [filterOps, title]);
+
+  useEffect(() => {
+    if (initialValue.length > 0) {
+      setBordersOrRegion(initialValue);
+    }
+  }, [initialValue]);
 
   const handleChange = (event: SelectChangeEvent<typeof bordersOrRegion>) => {
     const {
       target: { value }
     } = event;
+
     const updatedBordersOrRegion = typeof value === 'string' ? value.split(',') : value;
     setBordersOrRegion(updatedBordersOrRegion);
   };
+
+  useEffect(() => {
+    const recentFilters = [...filterOps];
+    const dropDownFilterIndex = filterOps.findIndex(
+      (filter) => filter.filterName.toLocaleLowerCase() === title.toLocaleLowerCase()
+    );
+
+    recentFilters[dropDownFilterIndex].value = filterOps[dropDownFilterIndex].value;
+    recentFilters[dropDownFilterIndex].filterEdit = true;
+    recentFilters[dropDownFilterIndex].active = true;
+    callback(recentFilters, title.toLocaleLowerCase(), bordersOrRegion);
+  }, [bordersOrRegion]);
 
   return (
     <div className="relative flex items-center w-full justify-start sm:justify-end ">
@@ -141,14 +142,30 @@ export default function MultipleSelectChip({
             </Box>
           )}
           MenuProps={MenuProps}>
-          {names.map((name, index) => (
-            <MenuItem
-              key={name + '-' + index}
-              value={name}
-              style={getStyles(name, bordersOrRegion, theme)}>
-              {name}
-            </MenuItem>
-          ))}
+          {names &&
+            names.map((name, index) =>
+              name ? (
+                <MenuItem
+                  key={name + '-' + index}
+                  value={name}
+                  onMouseEnter={() => handleMouseEnter(name)}
+                  style={getStyles(name, bordersOrRegion, theme)}>
+                  {name}
+                  {name ? (
+                    (name as string).toLocaleLowerCase() ===
+                    hoveredCountryName.toLocaleLowerCase() ? (
+                      <>
+                        <InformationCircleIcon className="w-[15px] h-[15px]" />
+                      </>
+                    ) : null
+                  ) : (
+                    <></>
+                  )}
+                </MenuItem>
+              ) : (
+                <></>
+              )
+            )}
         </Select>
       </FormControl>
     </div>
