@@ -98,6 +98,38 @@ body {
   }
 }
 
+.info-circle-icon {
+  opacity: 0;
+  width: 15px;
+  height: 15px;
+  transition: opacity 0.2s ease-in-out;
+}
+.info-circle-icon-visible {
+  opacity: 1;
+}
+
+/*Dropdown list*/
+.menu-item {
+  @apply !bg-slate-200;
+}
+.menu-item:hover {
+  @apply !bg-slate-400;
+}
+.dark .menu-item {
+  @apply !bg-slate-600;
+}
+
+.dark .menu-item:hover {
+  @apply !bg-slate-800;
+}
+.selected {
+  @apply !bg-slate-500;
+}
+
+.dark .selected {
+  @apply !bg-slate-700;
+}
+
 @media (min-width: 640px) {
   .card-center {
     margin-left: auto;

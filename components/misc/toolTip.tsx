@@ -1,14 +1,16 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import { fetchCountries } from '@components/helpers/countryFetch';
 import { Country } from '@app/page';
 import { IconButton, Tooltip } from '@mui/material';
 
 interface CountriesFetched {
-  countryName: string;
+  countryCode: string;
+  children: React.ReactNode;
+  visible: boolean;
 }
 
-function ToolTip({ countryName }: CountriesFetched) {
+function ToolTip({ countryCode, children, visible }: CountriesFetched) {
   const [toolCountries, setToolCountries] = useState<Country[]>([]);
   const [matchingCountry, setMatchingCountry] = useState<Country>();
   useEffect(() => {
@@ -20,13 +22,16 @@ function ToolTip({ countryName }: CountriesFetched) {
   }, []);
 
   useEffect(() => {
-    console.log('the countryname is: ' + countryName);
-  }, [countryName]);
+    const c = toolCountries.find(
+      (country) => country.cca3?.toLocaleLowerCase() === countryCode.toLocaleLowerCase()
+    );
+    setMatchingCountry(c);
+  }, [countryCode, toolCountries]);
 
   useEffect(() => {
-    const matchingCountry = countryName
+    const matchingCountry = countryCode
       ? toolCountries.find(
-          (country) => country.name.common.toLocaleLowerCase() === countryName.toLocaleLowerCase()
+          (country) => country.cca3?.toLocaleLowerCase() === countryCode.toLocaleLowerCase()
         )
       : undefined;
     setMatchingCountry(matchingCountry ? (matchingCountry as Country) : undefined);
@@ -49,10 +54,12 @@ function ToolTip({ countryName }: CountriesFetched) {
   );
 
   return (
-    <div className="flex bg-slate-700">
-      <Tooltip title={tooltipContent} arrow>
-        <IconButton></IconButton>
-      </Tooltip>
+    <div className="flex">
+      {visible && (
+        <Tooltip title={tooltipContent} arrow>
+          {children as ReactElement}
+        </Tooltip>
+      )}
     </div>
   );
 }

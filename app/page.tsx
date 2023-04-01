@@ -37,6 +37,7 @@ export interface Country {
   maps?: {
     googleMaps?: string;
   };
+  cca3?: string;
 }
 
 const HomePage = async ({ searchParams }: Props) => {

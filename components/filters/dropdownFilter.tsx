@@ -8,24 +8,26 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Chip from '@mui/material/Chip';
-import { CheckIcon } from '@heroicons/react/24/solid';
 import { FilterState } from './populationSlider';
 import { fetchCountries } from '@components/helpers/countryFetch';
-import { filter, reject } from 'lodash';
 import { useEffect, useState } from 'react';
-import { log } from 'console';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import ToolTip from '@components/misc/toolTip';
 
 const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
 const MenuProps = {
   PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250
-    }
-  }
+    className: 'rounded h-[175px] !bg-slate-200 dark:!bg-slate-600 '
+  },
+  anchorOrigin: {
+    vertical: 'bottom' as const,
+    horizontal: 'left' as const
+  },
+  transformOrigin: {
+    vertical: 'top' as const,
+    horizontal: 'left' as const
+  },
+  getContentAnchorEl: null
 };
 
 async function countryBordersOrRegion(name: string) {
@@ -69,6 +71,7 @@ export default function MultipleSelectChip({
   const [names, setNames] = useState<string[] | any[]>(['']);
   const [initialValue, setInitialValue] = useState<string[]>([]);
   const [hoveredCountryName, setHoveredCountryName] = useState('');
+  const [showTooltip, setShowTooltip] = useState(true);
 
   const handleMouseEnter = (name: string) => {
     setHoveredCountryName(name);
@@ -76,6 +79,16 @@ export default function MultipleSelectChip({
 
   const handleMouseLeave = () => {
     setHoveredCountryName('');
+  };
+  const handleMouseEnterIcon = () => {
+    setShowTooltip(true);
+  };
+
+  const handleMouseLeaveIcon = () => {
+    setShowTooltip(!showTooltip);
+    console.log('value is' + showTooltip);
+    setShowTooltip(!showTooltip);
+    console.log('value is' + showTooltip);
   };
   useEffect(() => {
     const fetchData = async () => {
@@ -123,6 +136,40 @@ export default function MultipleSelectChip({
     callback(recentFilters, title.toLocaleLowerCase(), bordersOrRegion);
   }, [bordersOrRegion]);
 
+  const menuItems = names.map((name, index) => {
+    if (!name) {
+      return null;
+    }
+    return (
+      <MenuItem
+        key={name + '-' + index}
+        value={name}
+        className={`menu-item dark:hover:!bg-slate-800 dark:!text-slate-100  
+        ${bordersOrRegion.includes(name) ? 'selected' : ''}`}
+        onMouseOver={() => handleMouseEnter(name)}
+        style={getStyles(name, bordersOrRegion, theme)}>
+        {name}
+        {name ? (
+          (name as string).toLocaleLowerCase() === hoveredCountryName.toLocaleLowerCase() ? (
+            <ToolTip countryCode={name} visible={showTooltip}>
+              <InformationCircleIcon
+                onMouseEnter={handleMouseEnterIcon}
+                onMouseLeave={handleMouseLeaveIcon}
+                className={`info-circle-icon ${
+                  (name as string).toLocaleLowerCase() === hoveredCountryName.toLocaleLowerCase()
+                    ? 'info-circle-icon-visible'
+                    : ''
+                }`}
+              />
+            </ToolTip>
+          ) : null
+        ) : (
+          <></>
+        )}
+      </MenuItem>
+    );
+  });
+
   return (
     <div className="relative flex items-center w-full justify-start sm:justify-end ">
       <FormControl sx={{ flexGrow: 1 }}>
@@ -142,30 +189,7 @@ export default function MultipleSelectChip({
             </Box>
           )}
           MenuProps={MenuProps}>
-          {names &&
-            names.map((name, index) =>
-              name ? (
-                <MenuItem
-                  key={name + '-' + index}
-                  value={name}
-                  onMouseEnter={() => handleMouseEnter(name)}
-                  style={getStyles(name, bordersOrRegion, theme)}>
-                  {name}
-                  {name ? (
-                    (name as string).toLocaleLowerCase() ===
-                    hoveredCountryName.toLocaleLowerCase() ? (
-                      <>
-                        <InformationCircleIcon className="w-[15px] h-[15px]" />
-                      </>
-                    ) : null
-                  ) : (
-                    <></>
-                  )}
-                </MenuItem>
-              ) : (
-                <></>
-              )
-            )}
+          {names && menuItems}
         </Select>
       </FormControl>
     </div>
