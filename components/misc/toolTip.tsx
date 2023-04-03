@@ -5,14 +5,15 @@ import { Country } from '@app/page';
 import { IconButton, Tooltip } from '@mui/material';
 
 interface CountriesFetched {
-  countryCode: string;
+  countryOrContinent: string;
   children: React.ReactNode;
-  visible: boolean;
+  showTools: boolean;
 }
 
-function ToolTip({ countryCode, children, visible }: CountriesFetched) {
+function ToolTip({ countryOrContinent, children, showTools }: CountriesFetched) {
   const [toolCountries, setToolCountries] = useState<Country[]>([]);
   const [matchingCountry, setMatchingCountry] = useState<Country>();
+  const [tools, setTools] = useState(showTools);
   useEffect(() => {
     const fetchCountriesData = async () => {
       const countries = await fetchCountries();
@@ -22,25 +23,30 @@ function ToolTip({ countryCode, children, visible }: CountriesFetched) {
   }, []);
 
   useEffect(() => {
+    console.log('the country or continent is: ' + countryOrContinent);
     const c = toolCountries.find(
-      (country) => country.cca3?.toLocaleLowerCase() === countryCode.toLocaleLowerCase()
+      (country) => country.cca3?.toLocaleLowerCase() === countryOrContinent.toLocaleLowerCase()
     );
     setMatchingCountry(c);
-  }, [countryCode, toolCountries]);
+  }, [countryOrContinent, toolCountries]);
 
   useEffect(() => {
-    const matchingCountry = countryCode
+    const matchingCountry = countryOrContinent
       ? toolCountries.find(
-          (country) => country.cca3?.toLocaleLowerCase() === countryCode.toLocaleLowerCase()
+          (country) => country.cca3?.toLocaleLowerCase() === countryOrContinent.toLocaleLowerCase()
         )
       : undefined;
     setMatchingCountry(matchingCountry ? (matchingCountry as Country) : undefined);
     console.log('the matching country name is: ' + matchingCountry?.name.common);
   }, [matchingCountry]);
 
+  const handleTools = () => {
+    setTools(!tools);
+  };
+
   // Prepare the tooltip content based on the matching country
   const tooltipContent = matchingCountry ? (
-    <div>
+    <div onMouseEnter={handleTools}>
       <div>{'Country Name: ' + matchingCountry.name.common}</div>
       <img
         src={matchingCountry.flags?.png || matchingCountry.flags?.svg}
@@ -55,7 +61,7 @@ function ToolTip({ countryCode, children, visible }: CountriesFetched) {
 
   return (
     <div className="flex">
-      {visible && (
+      {tools && (
         <Tooltip title={tooltipContent} arrow>
           {children as ReactElement}
         </Tooltip>

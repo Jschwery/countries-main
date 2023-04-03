@@ -70,25 +70,23 @@ export default function MultipleSelectChip({
   const [bordersOrRegion, setBordersOrRegion] = useState<string[]>([]);
   const [names, setNames] = useState<string[] | any[]>(['']);
   const [initialValue, setInitialValue] = useState<string[]>([]);
-  const [hoveredCountryName, setHoveredCountryName] = useState('');
-  const [showTooltip, setShowTooltip] = useState(true);
+  const [countryOrContinent, setCountryOrContinent] = useState('');
+  const [showTooltip, setShowTooltip] = useState(false);
 
   const handleMouseEnter = (name: string) => {
-    setHoveredCountryName(name);
+    setCountryOrContinent(name);
+    setShowTooltip(true);
   };
 
   const handleMouseLeave = () => {
-    setHoveredCountryName('');
+    setCountryOrContinent('');
   };
   const handleMouseEnterIcon = () => {
     setShowTooltip(true);
   };
 
   const handleMouseLeaveIcon = () => {
-    setShowTooltip(!showTooltip);
-    console.log('value is' + showTooltip);
-    setShowTooltip(!showTooltip);
-    console.log('value is' + showTooltip);
+    setShowTooltip(false);
   };
   useEffect(() => {
     const fetchData = async () => {
@@ -150,13 +148,13 @@ export default function MultipleSelectChip({
         style={getStyles(name, bordersOrRegion, theme)}>
         {name}
         {name ? (
-          (name as string).toLocaleLowerCase() === hoveredCountryName.toLocaleLowerCase() ? (
-            <ToolTip countryCode={name} visible={showTooltip}>
+          (name as string).toLocaleLowerCase() === countryOrContinent.toLocaleLowerCase() ? (
+            <ToolTip countryOrContinent={name} showTools={showTooltip}>
               <InformationCircleIcon
                 onMouseEnter={handleMouseEnterIcon}
                 onMouseLeave={handleMouseLeaveIcon}
                 className={`info-circle-icon ${
-                  (name as string).toLocaleLowerCase() === hoveredCountryName.toLocaleLowerCase()
+                  (name as string).toLocaleLowerCase() === countryOrContinent.toLocaleLowerCase()
                     ? 'info-circle-icon-visible'
                     : ''
                 }`}
