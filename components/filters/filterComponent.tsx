@@ -12,6 +12,7 @@ import flterObjectAndIndex, { fltrObjectAndIndex } from '../countriesDisplay';
 import { PaginateType } from './paginate';
 import { filter, indexOf } from 'lodash';
 import { log } from 'console';
+import PopulationsUpdate from './populationsUpdate';
 
 export interface FilterOptions {
   filterName: string;
@@ -37,24 +38,36 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
   ];
 
   const [options, setOptions] = useState<FilterOptions[]>(filters);
+  const [populationValue, setPopulationValue] = useState<[number, number]>();
   const [selectedOption, setSelectedOption] = useState<JSX.Element | null>(null);
   const [filterButtonShown, setFilterButtonShown] = useState(true);
 
+  const scalePopValues = (pops: [number, number]): [number, number] => {
+    const min_population = 1000;
+    const max_population = 1410000000;
+
+    const scaledPops = pops.map((pop) =>
+      Math.round(min_population + (pop * (max_population - min_population)) / 100)
+    );
+
+    return scaledPops as [number, number];
+  };
+
   useEffect(() => {
-    console.log('==================================================================');
-    console.log('CURRENT STATE\n');
-
-    options.forEach((option) => {
-      console.log(option);
-    });
-    console.log('==================================================================');
-
     options.some((option) => {
       option.active;
     })
       ? filterCallback(options)
       : console.log('no filters active');
   }, [options, filterCallback]);
+
+  // useEffect(() => {
+  //   console.log('the population value is ', populationValue);
+  // }, [populationValue]);
+
+  // useEffect(() => {
+  //   options.forEach((option) => console.log(option));
+  // }, [options]);
 
   const filterOptions = (
     filter: FilterOptions[],
@@ -65,9 +78,11 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
 
     switch (filterName.toLocaleLowerCase()) {
       case 'population':
+        const scaledPops = scalePopValues(valuePassed as [number, number]);
+        setPopulationValue(scaledPops);
         const updatedOptionPopulation = {
           ...(options ? options[filterAndIndex.index ?? -1] : {}),
-          value: valuePassed ?? [0, 0],
+          value: scaledPops ?? [0, 0],
           filterName: filterAndIndex.filterOption?.filterName ?? 'population'
         };
 
@@ -135,7 +150,8 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
 
       setOptions(updatedOptions);
       if (updatedOption.active && updatedOption.filterEdit) {
-        setSelectedOption(showOptionSlider(name) || null);
+        console.log('little test bit here: pop value is: ' + populationValue);
+        setSelectedOption(showOptionSlider(name, options) || null);
       } else {
         setFilterButtonShown((prevstate) => !prevstate);
         console.log('that filter was not active or the option was not active');
@@ -158,18 +174,17 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
     const optionsEdit = [...options];
 
     if (optionsEdit[index].active && optionsEdit[index].filterEdit) {
-      setSelectedOption(showOptionSlider(name) || null);
+      setSelectedOption(showOptionSlider(name, optionsEdit) || null);
     } else {
       setFilterButtonShown((prevstate) => !prevstate);
       console.log('that filter was not active or the option was not active');
     }
   };
 
-  const showOptionSlider = (queue: string) => {
+  const showOptionSlider = (queue: string, options: FilterOptions[]) => {
     const option = options.find(
       (x) => x.filterName.toLocaleLowerCase() === queue.toLocaleLowerCase()
     );
-
     switch (option?.filterName.toLocaleLowerCase()) {
       case 'population':
         return (
@@ -209,6 +224,13 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
   return (
     <div className="flex flex-col sm:flex-row w-full justify-start sm:justify-end items-start">
       {selectedOption ? selectedOption : <></>}
+      {options.some(
+        (option) => option.active && option.filterName.toLocaleLowerCase() === 'population'
+      ) ? (
+        <PopulationsUpdate population={populationValue as [number, number]} />
+      ) : (
+        <></>
+      )}
       <div id="filter-button-container" className="relative md:pl-2 py-4 items-end flex">
         {filterButtonShown && (
           <button

@@ -3,17 +3,24 @@ import React, { ReactElement, useEffect, useState } from 'react';
 import { fetchCountries } from '@components/helpers/countryFetch';
 import { Country } from '@app/page';
 import { IconButton, Tooltip } from '@mui/material';
-
+import continents from '@public/continents.json';
 interface CountriesFetched {
   countryOrContinent: string;
   children: React.ReactNode;
   showTools: boolean;
 }
+interface Continent {
+  continent: string;
+  imageURL: string;
+}
 
 function ToolTip({ countryOrContinent, children, showTools }: CountriesFetched) {
   const [toolCountries, setToolCountries] = useState<Country[]>([]);
-  const [matchingCountry, setMatchingCountry] = useState<Country>();
+  const [matchingCountryOrContinent, setMatchingCountryOrContinent] = useState<
+    Country | Continent
+  >();
   const [tools, setTools] = useState(showTools);
+
   useEffect(() => {
     const fetchCountriesData = async () => {
       const countries = await fetchCountries();
@@ -22,42 +29,54 @@ function ToolTip({ countryOrContinent, children, showTools }: CountriesFetched) 
     fetchCountriesData();
   }, []);
 
-  useEffect(() => {
-    console.log('the country or continent is: ' + countryOrContinent);
-    const c = toolCountries.find(
-      (country) => country.cca3?.toLocaleLowerCase() === countryOrContinent.toLocaleLowerCase()
-    );
-    setMatchingCountry(c);
-  }, [countryOrContinent, toolCountries]);
+  const findContinent = (name: string) => {
+    return continents.find((continent) => continent.continent.toLowerCase() === name.toLowerCase());
+  };
 
   useEffect(() => {
-    const matchingCountry = countryOrContinent
-      ? toolCountries.find(
-          (country) => country.cca3?.toLocaleLowerCase() === countryOrContinent.toLocaleLowerCase()
-        )
-      : undefined;
-    setMatchingCountry(matchingCountry ? (matchingCountry as Country) : undefined);
-    console.log('the matching country name is: ' + matchingCountry?.name.common);
-  }, [matchingCountry]);
+    const foundContinent = findContinent(countryOrContinent);
+    if (!foundContinent) {
+      const c = toolCountries.find(
+        (country) => country.cca3?.toLocaleLowerCase() === countryOrContinent.toLocaleLowerCase()
+      );
+      setMatchingCountryOrContinent(c);
+      return;
+    }
+    setMatchingCountryOrContinent(foundContinent);
+  }, [countryOrContinent, toolCountries]);
 
   const handleTools = () => {
     setTools(!tools);
   };
 
-  // Prepare the tooltip content based on the matching country
-  const tooltipContent = matchingCountry ? (
-    <div onMouseEnter={handleTools}>
-      <div>{'Country Name: ' + matchingCountry.name.common}</div>
-      <img
-        src={matchingCountry.flags?.png || matchingCountry.flags?.svg}
-        alt={`${matchingCountry.name} flag`}
-        width="30"
-        height="20"
-      />
-    </div>
-  ) : (
-    <div>No matching country found</div>
-  );
+  const tooltipContent = matchingCountryOrContinent ? (
+    'cca3' in matchingCountryOrContinent ? (
+      <div onMouseEnter={handleTools}>
+        <div>{'Country Name: ' + matchingCountryOrContinent.name.common}</div>
+        <img
+          src={matchingCountryOrContinent.flags?.png || matchingCountryOrContinent.flags?.svg}
+          alt={`${matchingCountryOrContinent.name} flag`}
+          width="30"
+          height="20"
+        />
+      </div>
+    ) : (
+      <div onMouseEnter={handleTools}>
+        {(matchingCountryOrContinent as Continent).continent !== '' &&
+          (matchingCountryOrContinent as Continent).continent !== undefined && (
+            <>
+              <div>{'Continent: ' + (matchingCountryOrContinent as Continent).continent}</div>
+              <img
+                src={(matchingCountryOrContinent as Continent).imageURL}
+                alt={`${(matchingCountryOrContinent as Continent).continent} image`}
+                width="30"
+                height="20"
+              />
+            </>
+          )}
+      </div>
+    )
+  ) : null;
 
   return (
     <div className="flex">

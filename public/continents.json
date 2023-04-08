@@ -1,0 +1,26 @@
+[
+  {
+    "continent": "Africa",
+    "imageURL": "./africanew.png"
+  },
+  {
+    "continent": "Asia",
+    "imageURL": "./png-transparent-asia-south-america-continent-map-leaf-grass-world-thumbnail-removebg-preview.png"
+  },
+  {
+    "continent": "Europe",
+    "imageURL": "./eurpng.png"
+  },
+  {
+    "continent": "Americas",
+    "imageURL": "./anmap-col.png"
+  },
+  {
+    "continent": "Oceania",
+    "imageURL": "./oce-col.png"
+  },
+  {
+    "continent": "Antarctic",
+    "imageURL": "./png-transparent-antarctica-chilean-antarctic-territory-globe-earth-globe-miscellaneous-blue-globe-removebg-preview(1).png"
+  }
+]
