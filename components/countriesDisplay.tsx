@@ -87,12 +87,13 @@ function CountriesDisplay({ countries }: { countries: Country[] }) {
     <div>
       <div className="w-full flex flex-wrap pt-5">
         <div className="w-[90%] flex mx-auto flex-wrap changeCol mb-3">
-          <div className="w-[50%] min-w-[200px] bg-yellow-300">
-            <div className="flex flex-col align-middle">
+          <div className="w-[50%] min-w-[200px]">
+            <div className="flex flex-col items-center justify-center h-full">
               <SearchBar />
             </div>
           </div>
-          <div className="w-[50%] min-w-[250px] bg-purple-600 flex items-end">
+
+          <div className="w-[50%] min-w-[250px] flex items-end">
             <FilterComponent filterCallback={filterCallback} />
           </div>
         </div>

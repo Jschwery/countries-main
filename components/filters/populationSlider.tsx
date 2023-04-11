@@ -24,15 +24,29 @@ export default function MinimumDistanceSlider({ callback, filterOps }: FilterSta
   const populationFilterIndex = filterOps.findIndex(
     (filter) => filter.filterName.toLocaleLowerCase() === 'population'
   );
+  const min_population = 1000;
+  const max_population = 1410000000;
+
+  const scaleValue = (value: number) => {
+    return Math.round(((value - min_population) * 100) / (max_population - min_population));
+  };
+
+  const arraysEqual = (a: number[], b: number[]) => {
+    return a.length === b.length && a.every((val, index) => val === b[index]);
+  };
 
   useEffect(() => {
     const updatedFilters = [...filterOps];
     updatedFilters[populationFilterIndex].active = true;
     updatedFilters[populationFilterIndex].filterEdit = true;
-    updatedFilters[populationFilterIndex].filterEdit
-      ? setValue2(updatedFilters[populationFilterIndex].value as [number, number])
+
+    const descaledValues = updatedFilters[populationFilterIndex].filterEdit
+      ? (updatedFilters[populationFilterIndex].value as [number, number]).map(scaleValue)
       : [0, 15];
 
+    console.log('the scaled values within slider are:', descaledValues);
+
+    setValue2(!arraysEqual(descaledValues, [0, 0]) ? descaledValues : [0, 15]);
     callback(updatedFilters, 'population', [value2[0], value2[1]]);
   }, []);
 
@@ -70,7 +84,7 @@ export default function MinimumDistanceSlider({ callback, filterOps }: FilterSta
         onChange={handleChange2}
         valueLabelDisplay="auto"
         disableSwap
-        sx={{ flexGrow: 1 }}
+        sx={{ flexGrow: 1, maxWidth: 220, marginLeft: 'auto' }}
         components={{
           Thumb: (props) => (
             <Thumb

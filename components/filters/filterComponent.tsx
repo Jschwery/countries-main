@@ -58,16 +58,32 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
       option.active;
     })
       ? filterCallback(options)
-      : console.log('no filters active');
+      : '';
   }, [options, filterCallback]);
 
-  // useEffect(() => {
-  //   console.log('the population value is ', populationValue);
-  // }, [populationValue]);
+  useEffect(() => {
+    const popActive = options.some(
+      (pop) => pop.filterName.toLocaleLowerCase() === 'population' && pop.active
+    );
+
+    const populationOption = options.find((op) => op.filterName.toLowerCase() === 'population');
+    const scaledPops = scalePopValues(populationOption?.value as [number, number]);
+
+    popActive ? setPopulationValue(scaledPops) : '';
+  }, []);
+
+  useEffect(() => {
+    console.log('the population value is ', populationValue);
+  }, [populationValue]);
 
   // useEffect(() => {
   //   options.forEach((option) => console.log(option));
   // }, [options]);
+
+  /*
+  currently the population value is being 
+
+  */
 
   const filterOptions = (
     filter: FilterOptions[],
@@ -165,6 +181,13 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
   };
 
   const handleEdit = (name: string) => {
+    console.log('within the handleEdit ya heeeeard');
+    console.log('the values are for population: ');
+    const optionsfouund = options.find(
+      (option) => option.filterName.toLocaleLowerCase() === 'population'
+    );
+    console.log(optionsfouund?.value);
+
     setFilterButtonShown((prevstate) => !prevstate);
 
     const index = options.findIndex(
@@ -188,7 +211,7 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
     switch (option?.filterName.toLocaleLowerCase()) {
       case 'population':
         return (
-          <div className="flex align-middle justify-center items-center w-full bg-amber-400">
+          <div className="flex align-middle justify-center items-center w-full pt-6">
             <MinimumDistanceSlider filterOps={options} callback={filterOptions} />
             <CheckIcon
               onClick={() => handleCheckClicked()}
@@ -198,7 +221,7 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
         );
       case 'region':
         return (
-          <div className="flex align-middle justify-center items-center w-full bg-amber-400">
+          <div className="flex align-middle justify-center items-center w-full">
             <SelectAutoWidth filterOps={options} callback={filterOptions} title="Region" />
             <CheckIcon
               onClick={() => handleCheckClicked()}
@@ -208,7 +231,7 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
         );
       case 'borders':
         return (
-          <div className="flex align-middle justify-center items-center w-full bg-amber-400">
+          <div className="flex align-middle justify-center items-center w-full">
             <SelectAutoWidth filterOps={options} callback={filterOptions} title="Borders" />
             <CheckIcon
               onClick={() => handleCheckClicked()}
@@ -221,16 +244,30 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
     }
   };
 
-  return (
-    <div className="flex flex-col sm:flex-row w-full justify-start sm:justify-end items-start">
+  const displayOption = () => (
+    <div className="w-[300px] p-2 flex flex-col items-end">
       {selectedOption ? selectedOption : <></>}
       {options.some(
         (option) => option.active && option.filterName.toLocaleLowerCase() === 'population'
       ) ? (
-        <PopulationsUpdate population={populationValue as [number, number]} />
+        <div className="p-2 mt-1 w-[100%] flex justify-end">
+          <PopulationsUpdate
+            population={
+              options.find((option) => option.filterName.toLocaleLowerCase() === 'population')
+                ?.value as [number, number]
+            }
+          />
+        </div>
       ) : (
         <></>
       )}
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col w-full justify-start sm:justify-end sm:items-end items-start">
+      {displayOption()}
+
       <div id="filter-button-container" className="relative md:pl-2 py-4 items-end flex">
         {filterButtonShown && (
           <button
