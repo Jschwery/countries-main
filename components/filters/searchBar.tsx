@@ -35,21 +35,8 @@ export default function Search({ disabled }: { disabled?: boolean }) {
     setPhrase('');
   }
 
-  /**
-   * TODO
-   * fix links with countries containing spaces
-   * add paginate option
-   * get filters working
-   * tune layout of flags page
-   *
-   * create oauth with google
-   * add option to like countries
-   * add a quiz
-   * add mui stats
-   */
-
   return (
-    <div className="relative mt-5">
+    <div className="flex items-center">
       <label htmlFor="search" className="sr-only">
         Search
       </label>
