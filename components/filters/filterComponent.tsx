@@ -193,7 +193,7 @@ function FilterComponent({ filterCallback, setSearchWidth }: FilterComponentProp
     const index = options.findIndex(
       (x) => x.filterName.toLocaleLowerCase() === name.toLocaleLowerCase()
     );
-    //ok
+    //okd
     const optionsEdit = [...options];
 
     if (optionsEdit[index].active && optionsEdit[index].filterEdit) {
