@@ -23,9 +23,10 @@ export interface FilterOptions {
 
 type FilterComponentProps = {
   filterCallback: (filterOptions: FilterOptions[]) => void;
+  setSearchWidth: (setWidth: boolean) => void;
 };
 
-function FilterComponent({ filterCallback }: FilterComponentProps) {
+function FilterComponent({ filterCallback, setSearchWidth }: FilterComponentProps) {
   const filters: FilterOptions[] = [
     { filterName: 'region', value: [], active: false, filterEdit: false },
     { filterName: 'borders', value: [], active: false, filterEdit: false },
@@ -41,6 +42,7 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
   const [populationValue, setPopulationValue] = useState<[number, number]>();
   const [selectedOption, setSelectedOption] = useState<JSX.Element | null>(null);
   const [filterButtonShown, setFilterButtonShown] = useState(true);
+  const [showPopulationUpdate, setShowPopulationUpdate] = useState(false);
 
   const scalePopValues = (pops: [number, number]): [number, number] => {
     const min_population = 1000;
@@ -52,6 +54,10 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
 
     return scaledPops as [number, number];
   };
+
+  useEffect(() => {
+    options.forEach((option) => console.log(option));
+  }, [options]);
 
   useEffect(() => {
     options.some((option) => {
@@ -75,15 +81,6 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
   useEffect(() => {
     console.log('the population value is ', populationValue);
   }, [populationValue]);
-
-  // useEffect(() => {
-  //   options.forEach((option) => console.log(option));
-  // }, [options]);
-
-  /*
-  currently the population value is being 
-
-  */
 
   const filterOptions = (
     filter: FilterOptions[],
@@ -144,7 +141,10 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
 
   const filterClicked = (name: string) => {
     setFilterButtonShown((prevstate) => !prevstate);
-
+    const popOption = options.find(
+      (option) => option.filterName.toLocaleLowerCase() === 'population'
+    );
+    popOption?.active ? setSearchWidth(false) : setSearchWidth(true);
     const index = options.findIndex(
       (x) => x.filterName.toLocaleLowerCase() === name.toLocaleLowerCase()
     );
@@ -177,19 +177,19 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
 
   const handleCheckClicked = () => {
     setFilterButtonShown((prevstate) => !prevstate);
+    setSearchWidth(false);
     setSelectedOption(null);
+    setShowPopulationUpdate((prevstate) => !prevstate);
+  };
+
+  const changeWidth = () => {
+    setTimeout(() => {
+      setSearchWidth(true);
+    }, 1);
   };
 
   const handleEdit = (name: string) => {
-    console.log('within the handleEdit ya heeeeard');
-    console.log('the values are for population: ');
-    const optionsfouund = options.find(
-      (option) => option.filterName.toLocaleLowerCase() === 'population'
-    );
-    console.log(optionsfouund?.value);
-
     setFilterButtonShown((prevstate) => !prevstate);
-
     const index = options.findIndex(
       (x) => x.filterName.toLocaleLowerCase() === name.toLocaleLowerCase()
     );
@@ -200,8 +200,8 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
       setSelectedOption(showOptionSlider(name, optionsEdit) || null);
     } else {
       setFilterButtonShown((prevstate) => !prevstate);
-      console.log('that filter was not active or the option was not active');
     }
+    changeWidth();
   };
 
   const showOptionSlider = (queue: string, options: FilterOptions[]) => {
@@ -244,30 +244,28 @@ function FilterComponent({ filterCallback }: FilterComponentProps) {
     }
   };
 
-  const displayOption = () => (
-    <div className="w-[300px] p-2 flex flex-col items-end">
-      {selectedOption ? selectedOption : <></>}
-      {options.some(
-        (option) => option.active && option.filterName.toLocaleLowerCase() === 'population'
-      ) ? (
-        <div className="p-2 mt-1 w-[100%] flex justify-end">
-          <PopulationsUpdate
-            population={
-              options.find((option) => option.filterName.toLocaleLowerCase() === 'population')
-                ?.value as [number, number]
-            }
-          />
-        </div>
-      ) : (
-        <></>
-      )}
-    </div>
-  );
-
   return (
     <div className="flex flex-col w-full justify-start sm:justify-end sm:items-end items-start">
-      {displayOption()}
-
+      <div
+        className={`w-[300px] p-2 flex flex-col items-end transition-opacity transition-max-height duration-400 overflow-hidden ${
+          !filterButtonShown ? 'opacity-100 max-h-[1000px]' : 'opacity-0 max-h-0'
+        }`}>
+        {selectedOption ? selectedOption : <></>}
+        {options.some(
+          (option) => option.active && option.filterName.toLocaleLowerCase() === 'population'
+        ) ? (
+          <div className="p-2 mt-1 w-[100%] flex justify-end">
+            <PopulationsUpdate
+              population={
+                options.find((option) => option.filterName.toLocaleLowerCase() === 'population')
+                  ?.value as [number, number]
+              }
+            />
+          </div>
+        ) : (
+          <></>
+        )}
+      </div>
       <div id="filter-button-container" className="relative md:pl-2 py-4 items-end flex">
         {filterButtonShown && (
           <button

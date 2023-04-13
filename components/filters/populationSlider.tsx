@@ -27,8 +27,12 @@ export default function MinimumDistanceSlider({ callback, filterOps }: FilterSta
   const min_population = 1000;
   const max_population = 1410000000;
 
-  const scaleValue = (value: number) => {
+  const descaleValue = (value: number) => {
     return Math.round(((value - min_population) * 100) / (max_population - min_population));
+  };
+
+  const scaleValue = (value: number) => {
+    return Math.round(min_population + (value * (max_population - min_population)) / 100);
   };
 
   const arraysEqual = (a: number[], b: number[]) => {
@@ -40,14 +44,18 @@ export default function MinimumDistanceSlider({ callback, filterOps }: FilterSta
     updatedFilters[populationFilterIndex].active = true;
     updatedFilters[populationFilterIndex].filterEdit = true;
 
-    const descaledValues = updatedFilters[populationFilterIndex].filterEdit
-      ? (updatedFilters[populationFilterIndex].value as [number, number]).map(scaleValue)
-      : [0, 15];
+    const populationValues = updatedFilters[populationFilterIndex].value as [number, number];
 
-    console.log('the scaled values within slider are:', descaledValues);
+    const descaledValues = populationValues.map((value) => {
+      return value > 100 ? descaleValue(value) : value;
+    });
 
-    setValue2(!arraysEqual(descaledValues, [0, 0]) ? descaledValues : [0, 15]);
-    callback(updatedFilters, 'population', [value2[0], value2[1]]);
+    setValue2(descaledValues);
+    callback(
+      updatedFilters,
+      'population',
+      value2[0] < 100 && value2[1] < 100 ? [descaledValues[0], descaledValues[1]] : [0, 0]
+    );
   }, []);
 
   const handleChange2 = (event: Event, newValue: number | number[], activeThumb: number) => {

@@ -26,6 +26,7 @@ function CountriesDisplay({ countries }: { countries: Country[] }) {
   console.log('the countries display is here: ' + countries.length);
 
   const [filteredCountries, setFilteredCountries] = useState<Country[]>(countries);
+  const [searchWidth, setSearchWidth] = useState(false);
 
   useEffect(() => {
     console.log(
@@ -37,6 +38,10 @@ function CountriesDisplay({ countries }: { countries: Country[] }) {
 
     setFilteredCountries(countries);
   }, [countries]);
+
+  useEffect(() => {
+    console.log('the current search width value is ' + searchWidth);
+  }, [searchWidth]);
 
   //need fallback if there is no
   const filterCallback = (filterOptions: FilterOptions[]) => {
@@ -83,18 +88,28 @@ function CountriesDisplay({ countries }: { countries: Country[] }) {
     }
   };
 
+  const handleSetSearchWidth = (setWidth: boolean) => {
+    setWidth ? setSearchWidth(!searchWidth) : setSearchWidth(false);
+  };
+
   return (
     <div>
       <div className="w-full flex flex-wrap pt-5">
-        <div className="w-[90%] flex mx-auto flex-wrap changeCol mb-3">
+        <div className="w-[90%] flex mx-auto flex-wrap changeCol mb-2">
           <div className="w-[50%] min-w-[200px]">
-            <div className="flex flex-col items-center justify-center h-full">
+            <div
+              className={`flex flex-col items-start md:items-baseline justify-center h-full mt-2 ${
+                searchWidth ? 'ml-[28px]' : ''
+              }`}>
               <SearchBar />
             </div>
           </div>
 
-          <div className="w-[50%] min-w-[250px] flex items-end">
-            <FilterComponent filterCallback={filterCallback} />
+          <div className="w-[50%] min-w-[250px] flex items-start md:items-end">
+            <FilterComponent
+              filterCallback={filterCallback}
+              setSearchWidth={handleSetSearchWidth}
+            />
           </div>
         </div>
         <div className="w-full flex justify-center pt-4 sm:pt-0 align-middle">
