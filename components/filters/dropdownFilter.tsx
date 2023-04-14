@@ -167,22 +167,29 @@ export default function MultipleSelectChip({
       </MenuItem>
     );
   });
-
   return (
-    <div className="relative flex items-center w-full justify-start sm:justify-end ">
-      <FormControl sx={{ flexGrow: 1 }}>
-        <InputLabel id="demo-multiple-chip-label">{title}</InputLabel>
+    <div className="relative flex items-center w-full justify-start sm:justify-end dark:bg-slate-800">
+      <FormControl className="border-slate-100 dark:border-slate-700" sx={{ flexGrow: 1 }}>
+        <InputLabel className="text-slate-500 dark:text-slate-200" id="demo-multiple-chip-label">
+          {title}
+        </InputLabel>
         <Select
           labelId="demo-multiple-chip-label"
           id="demo-multiple-chip"
           multiple
           value={bordersOrRegion}
           onChange={handleChange}
-          input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
+          input={
+            <OutlinedInput
+              className="dark:text-slate-200 dark:bg-slate-700 dark:border-slate-700"
+              id="select-multiple-chip"
+              label="Chip"
+            />
+          }
           renderValue={(selected) => (
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
               {selected.map((value) => (
-                <Chip key={value} label={value} />
+                <Chip className="dark:bg-slate-600 dark:text-slate-200" key={value} label={value} />
               ))}
             </Box>
           )}
