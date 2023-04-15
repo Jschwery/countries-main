@@ -29,36 +29,21 @@ function CountriesDisplay({ countries }: { countries: Country[] }) {
   const [searchWidth, setSearchWidth] = useState(false);
 
   useEffect(() => {
-    console.log(
-      'filtered countries length:' +
-        filteredCountries.length +
-        '\ncountries length from props: ' +
-        countries.length
-    );
-
     setFilteredCountries(countries);
   }, [countries]);
 
-  useEffect(() => {
-    console.log('the current search width value is ' + searchWidth);
-  }, [searchWidth]);
-
-  //need fallback if there is no
   const filterCallback = (filterOptions: FilterOptions[]) => {
     if (filterOptions.some((option) => option.active)) {
       const countriesFiltered = filteredCountries.filter((country) => {
         return filterOptions.every((filter) => {
           switch (filter.filterName.toLocaleLowerCase()) {
             case 'region':
-              console.log('top level region display');
-
               return (
                 filter.value &&
                 typeof filter.value === 'object' &&
                 (filter.value as string[]).includes(country?.region || '')
               );
             case 'borders':
-              console.log('top level region display');
               return (
                 country.borders &&
                 country.borders.every((border) =>
@@ -68,7 +53,6 @@ function CountriesDisplay({ countries }: { countries: Country[] }) {
                 )
               );
             case 'population':
-              console.log('top level region display');
               return (
                 country.population &&
                 country.population >= (filter.value as [number, number])[0] &&
@@ -79,11 +63,8 @@ function CountriesDisplay({ countries }: { countries: Country[] }) {
           }
         });
       });
-
       setFilteredCountries(countriesFiltered);
     } else {
-      console.log('within else');
-
       setFilteredCountries(countries);
     }
   };
@@ -99,7 +80,7 @@ function CountriesDisplay({ countries }: { countries: Country[] }) {
           <div className="w-[50%] min-w-[200px]">
             <div
               className={`flex flex-col items-start md:items-baseline justify-center h-full mt-2 ${
-                searchWidth ? 'ml-[28px]' : ''
+                searchWidth ? 'ml-[28px] md:ml-0' : ''
               }`}>
               <SearchBar />
             </div>

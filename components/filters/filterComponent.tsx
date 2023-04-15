@@ -141,10 +141,12 @@ function FilterComponent({ filterCallback, setSearchWidth }: FilterComponentProp
 
   const filterClicked = (name: string) => {
     setFilterButtonShown((prevstate) => !prevstate);
-    const popOption = options.find(
-      (option) => option.filterName.toLocaleLowerCase() === 'population'
-    );
-    popOption?.active ? setSearchWidth(false) : setSearchWidth(true);
+    options.forEach((op) => console.log(op.filterName.toLocaleLowerCase()));
+    const filterOp = options.find((option) => {
+      return option.filterName.toLocaleLowerCase() === name.toLocaleLowerCase();
+    });
+
+    filterOp?.active ? setSearchWidth(false) : setSearchWidth(true);
     const index = options.findIndex(
       (x) => x.filterName.toLocaleLowerCase() === name.toLocaleLowerCase()
     );
@@ -222,21 +224,25 @@ function FilterComponent({ filterCallback, setSearchWidth }: FilterComponentProp
       case 'region':
         return (
           <div className="flex align-middle justify-center items-center w-full">
-            <SelectAutoWidth filterOps={options} callback={filterOptions} title="Region" />
-            <CheckIcon
-              onClick={() => handleCheckClicked()}
-              className=" w-[30px] h-[30px] text-green-600 hover:text-green-400 transition-all hover:cursor-pointer pb-1 px-0.5 ml-1.5"
-            />
+            <div className="w-full flex items-center justify-center sm:mt-5">
+              <SelectAutoWidth filterOps={options} callback={filterOptions} title="Region" />
+              <CheckIcon
+                onClick={() => handleCheckClicked()}
+                className=" w-[30px] h-[30px] text-green-600 mr-20 sm:mr-0 hover:text-green-400 transition-all hover:cursor-pointer pb-1 px-0.5 ml-1.5 mt-1 sm:mt-[12px]"
+              />
+            </div>
           </div>
         );
       case 'borders':
         return (
           <div className="flex align-middle justify-center items-center w-full">
-            <SelectAutoWidth filterOps={options} callback={filterOptions} title="Borders" />
-            <CheckIcon
-              onClick={() => handleCheckClicked()}
-              className=" w-[30px] h-[30px] text-green-600 hover:text-green-400 transition-all hover:cursor-pointer pb-1 px-0.5 ml-1.5"
-            />
+            <div className="w-full flex items-center justify-center sm:mt-5">
+              <SelectAutoWidth filterOps={options} callback={filterOptions} title="Borders" />
+              <CheckIcon
+                onClick={() => handleCheckClicked()}
+                className=" w-[30px] h-[30px] text-green-600 mr-20 sm:mr-0 hover:text-green-400 transition-all hover:cursor-pointer pb-1 px-0.5 ml-1.5 mt-1 sm:mt-[12px]"
+              />
+            </div>
           </div>
         );
       default:
@@ -270,7 +276,10 @@ function FilterComponent({ filterCallback, setSearchWidth }: FilterComponentProp
         {filterButtonShown && (
           <button
             type="button"
-            className="inline-flex w-32 h-[45px] right-0 top-0 rounded-md border border-gray-300 hover:border-lime-600 shadow-sm px-4 py-2 dark:bg-slate-700 bg-white text-sm font-medium  hover:bg-gray-50 focus:outline-none focus:ring-2 text-white  focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+            className="inline-flex w-32 h-[45px] right-0 top-0 rounded-md border border-gray-300 hover:border-lime-600 px-4 py-2 
+             dark:bg-slate-700 text-black shadow-black shadow-md bg-white text-sm font-medium  
+             hover:bg-gray-50 focus:outline-none focus:ring-2 dark:text-white  
+             focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
             id="menu-button"
             aria-expanded="true"
             aria-haspopup="true">
