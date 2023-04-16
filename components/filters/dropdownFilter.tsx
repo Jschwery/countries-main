@@ -167,13 +167,10 @@ export default function MultipleSelectChip({
       </MenuItem>
     );
   });
-
   return (
-    <div className="relative flex items-start sm:w-full flex-1 mr-auto sm:justify-end dark:bg-slate-800 mt-2 sm:mt-5 ml-[20px]">
-      <FormControl className="!border-slate-100 dark:border-slate-700" sx={{ flexGrow: 1 }}>
-        <InputLabel className="dark:!text-slate-50 text-black" id="demo-multiple-chip-label">
-          {title}
-        </InputLabel>
+    <div className="relative flex items-center w-full justify-start sm:justify-end ">
+      <FormControl sx={{ flexGrow: 1 }}>
+        <InputLabel id="demo-multiple-chip-label">{title}</InputLabel>
         <Select
           labelId="demo-multiple-chip-label"
           id="demo-multiple-chip"

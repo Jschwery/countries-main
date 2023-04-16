@@ -279,7 +279,7 @@ function FilterComponent({ filterCallback, setSearchWidth }: FilterComponentProp
             className="inline-flex w-32 h-[45px] right-0 top-0 rounded-md border border-gray-300 hover:border-lime-600 px-4 py-2 
              dark:bg-slate-700 text-black shadow-black shadow-md bg-white text-sm font-medium  
              hover:bg-gray-50 focus:outline-none focus:ring-2 dark:text-white  
-             focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+         focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
             id="menu-button"
             aria-expanded="true"
             aria-haspopup="true">
