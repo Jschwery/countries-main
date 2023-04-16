@@ -23,16 +23,25 @@ export function fltrObjectAndIndex(filterName: string, filterOptions: FilterOpti
 }
 
 function CountriesDisplay({ countries }: { countries: Country[] }) {
-  console.log('the countries display is here: ' + countries.length);
+  console.log('the countries display is from CountriesDisplay Prop ' + countries.length);
 
   const [filteredCountries, setFilteredCountries] = useState<Country[]>(countries);
   const [searchWidth, setSearchWidth] = useState(false);
 
   useEffect(() => {
+    console.log('the countries length is: ' + countries.length);
+
     setFilteredCountries(countries);
   }, [countries]);
 
+  useEffect(() => {
+    console.log('the filtered countries length is: ' + filteredCountries.length);
+  }, [filteredCountries]);
+
   const filterCallback = (filterOptions: FilterOptions[]) => {
+    console.log('within the COUNTRY DISPLAY FILTER CALLBACK IMPORTANT!!!!!!!!!!!!!!!!!!!!!!');
+    filterOptions.forEach((op) => console.log(op.filterName + ' is it active?: ' + op.active));
+
     if (filterOptions.some((option) => option.active)) {
       const countriesFiltered = filteredCountries.filter((country) => {
         return filterOptions.every((filter) => {

@@ -16,6 +16,14 @@ ul li {
   font-size: 10px;
 }
 
+.icon-color {
+  @apply text-black;
+}
+
+.dark .icon-color {
+  @apply text-white;
+}
+
 .checkHover {
   @apply hover:scale-105 text-green-400;
 }

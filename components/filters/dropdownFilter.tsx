@@ -168,9 +168,11 @@ export default function MultipleSelectChip({
     );
   });
   return (
-    <div className="relative flex items-center w-full justify-start sm:justify-end ">
+    <div className="relative flex items-center w-full ml-5  justify-start sm:justify-end ">
       <FormControl sx={{ flexGrow: 1 }}>
-        <InputLabel id="demo-multiple-chip-label">{title}</InputLabel>
+        <InputLabel className="!text-slate-900 dark:!text-slate-50" id="demo-multiple-chip-label">
+          {title}
+        </InputLabel>
         <Select
           labelId="demo-multiple-chip-label"
           id="demo-multiple-chip"
@@ -179,7 +181,7 @@ export default function MultipleSelectChip({
           onChange={handleChange}
           input={
             <OutlinedInput
-              className="dark:text-slate-200 dark:bg-slate-700 dark:border-slate-700"
+              className="dark:!text-slate-200 dark:!bg-slate-700 dark:!border-slate-800 shadow-slate-900 shadow-md"
               id="select-multiple-chip"
               label="Chip"
             />
@@ -191,6 +193,7 @@ export default function MultipleSelectChip({
               ))}
             </Box>
           )}
+          className="icon-color"
           MenuProps={MenuProps}>
           {names && menuItems}
         </Select>

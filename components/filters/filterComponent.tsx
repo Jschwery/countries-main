@@ -2,16 +2,12 @@
 
 import React, { ReactNode, useEffect, useState } from 'react';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
-import Slider from '@mui/material/Slider';
 import MinimumDistanceSlider from './populationSlider';
 import SelectAutoWidth from './dropdownFilter';
-import { XCircleIcon } from '@heroicons/react/24/solid';
 import Check, { CheckIcon } from '@heroicons/react/24/outline';
 import { PencilIcon } from '@heroicons/react/24/outline';
 import flterObjectAndIndex, { fltrObjectAndIndex } from '../countriesDisplay';
 import { PaginateType } from './paginate';
-import { filter, indexOf } from 'lodash';
-import { log } from 'console';
 import PopulationsUpdate from './populationsUpdate';
 
 export interface FilterOptions {
@@ -55,16 +51,14 @@ function FilterComponent({ filterCallback, setSearchWidth }: FilterComponentProp
     return scaledPops as [number, number];
   };
 
-  useEffect(() => {
-    options.forEach((option) => console.log(option));
-  }, [options]);
+  // useEffect(() => {
+  //   options.forEach((option) => console.log(option));
+  // }, [options]);
 
   useEffect(() => {
-    options.some((option) => {
-      option.active;
-    })
-      ? filterCallback(options)
-      : '';
+    if (options.some((option) => option.active)) {
+      filterCallback(options);
+    }
   }, [options, filterCallback]);
 
   useEffect(() => {
@@ -77,10 +71,6 @@ function FilterComponent({ filterCallback, setSearchWidth }: FilterComponentProp
 
     popActive ? setPopulationValue(scaledPops) : '';
   }, []);
-
-  useEffect(() => {
-    console.log('the population value is ', populationValue);
-  }, [populationValue]);
 
   const filterOptions = (
     filter: FilterOptions[],
@@ -141,7 +131,6 @@ function FilterComponent({ filterCallback, setSearchWidth }: FilterComponentProp
 
   const filterClicked = (name: string) => {
     setFilterButtonShown((prevstate) => !prevstate);
-    options.forEach((op) => console.log(op.filterName.toLocaleLowerCase()));
     const filterOp = options.find((option) => {
       return option.filterName.toLocaleLowerCase() === name.toLocaleLowerCase();
     });
@@ -168,11 +157,9 @@ function FilterComponent({ filterCallback, setSearchWidth }: FilterComponentProp
 
       setOptions(updatedOptions);
       if (updatedOption.active && updatedOption.filterEdit) {
-        console.log('little test bit here: pop value is: ' + populationValue);
         setSelectedOption(showOptionSlider(name, options) || null);
       } else {
         setFilterButtonShown((prevstate) => !prevstate);
-        console.log('that filter was not active or the option was not active');
       }
     }
   };
@@ -240,7 +227,7 @@ function FilterComponent({ filterCallback, setSearchWidth }: FilterComponentProp
               <SelectAutoWidth filterOps={options} callback={filterOptions} title="Borders" />
               <CheckIcon
                 onClick={() => handleCheckClicked()}
-                className=" w-[30px] h-[30px] text-green-600 mr-20 sm:mr-0 hover:text-green-400 transition-all hover:cursor-pointer pb-1 px-0.5 ml-1.5 mt-1 sm:mt-[12px]"
+                className="w-[30px] h-[30px] min-w-[30px] min-h-[30px] text-green-600 mr-20 sm:mr-0 hover:text-green-400 transition-all hover:cursor-pointer pb-1 px-0.5 ml-1.5 mt-1 sm:mt-[3px]"
               />
             </div>
           </div>
@@ -253,7 +240,7 @@ function FilterComponent({ filterCallback, setSearchWidth }: FilterComponentProp
   return (
     <div className="flex flex-col w-full justify-start sm:justify-end sm:items-end items-start">
       <div
-        className={`w-[300px] p-2 flex flex-col items-end transition-opacity transition-max-height duration-400 overflow-hidden ${
+        className={`w-[300px] py-2 pl-2 flex flex-col items-end transition-opacity transition-max-height duration-400 overflow-hidden ${
           !filterButtonShown ? 'opacity-100 max-h-[1000px]' : 'opacity-0 max-h-0'
         }`}>
         {selectedOption ? selectedOption : <></>}
