@@ -93,8 +93,6 @@ export default function MultipleSelectChip({
       const result = await countryBordersOrRegion(title);
       setNames(result ?? []);
     };
-    console.log('1st useEffect - title:', title);
-
     fetchData();
   }, [title]);
 

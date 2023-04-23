@@ -39,6 +39,7 @@ function FilterComponent({ filterCallback, setSearchWidth }: FilterComponentProp
   const [selectedOption, setSelectedOption] = useState<JSX.Element | null>(null);
   const [filterButtonShown, setFilterButtonShown] = useState(true);
   const [showPopulationUpdate, setShowPopulationUpdate] = useState(false);
+  const [singleOption, setSingleOption] = useState<FilterOptions | null>(null);
 
   const scalePopValues = (pops: [number, number]): [number, number] => {
     const min_population = 1000;
@@ -51,15 +52,16 @@ function FilterComponent({ filterCallback, setSearchWidth }: FilterComponentProp
     return scaledPops as [number, number];
   };
 
-  // useEffect(() => {
-  //   options.forEach((option) => console.log(option));
-  // }, [options]);
-
   useEffect(() => {
+    // options.forEach((option) => console.log(option));
     if (options.some((option) => option.active)) {
-      filterCallback(options);
+      const filtersFound = options.filter((option) => option.active && option.filterEdit);
+
+      filterCallback(filtersFound);
+    } else {
+      filterCallback([]);
     }
-  }, [options, filterCallback]);
+  }, [options]);
 
   useEffect(() => {
     const popActive = options.some(
@@ -168,6 +170,7 @@ function FilterComponent({ filterCallback, setSearchWidth }: FilterComponentProp
     setFilterButtonShown((prevstate) => !prevstate);
     setSearchWidth(false);
     setSelectedOption(null);
+    setSingleOption(null);
     setShowPopulationUpdate((prevstate) => !prevstate);
   };
 
@@ -182,7 +185,6 @@ function FilterComponent({ filterCallback, setSearchWidth }: FilterComponentProp
     const index = options.findIndex(
       (x) => x.filterName.toLocaleLowerCase() === name.toLocaleLowerCase()
     );
-    //okd
     const optionsEdit = [...options];
 
     if (optionsEdit[index].active && optionsEdit[index].filterEdit) {
@@ -193,10 +195,13 @@ function FilterComponent({ filterCallback, setSearchWidth }: FilterComponentProp
     changeWidth();
   };
 
+  //
+
   const showOptionSlider = (queue: string, options: FilterOptions[]) => {
     const option = options.find(
       (x) => x.filterName.toLocaleLowerCase() === queue.toLocaleLowerCase()
     );
+    setSingleOption(option ? option : null);
     switch (option?.filterName.toLocaleLowerCase()) {
       case 'population':
         return (
@@ -215,7 +220,7 @@ function FilterComponent({ filterCallback, setSearchWidth }: FilterComponentProp
               <SelectAutoWidth filterOps={options} callback={filterOptions} title="Region" />
               <CheckIcon
                 onClick={() => handleCheckClicked()}
-                className=" w-[30px] h-[30px] text-green-600 mr-20 sm:mr-0 hover:text-green-400 transition-all hover:cursor-pointer pb-1 px-0.5 ml-1.5 mt-1 sm:mt-[12px]"
+                className="w-[30px] h-[30px] min-w-[30px] min-h-[30px] text-green-600 mr-20 sm:mr-0 hover:text-green-400 transition-all hover:cursor-pointer pb-1 px-0.5 ml-1.5 mt-1 sm:mt-[3px]"
               />
             </div>
           </div>
@@ -237,6 +242,10 @@ function FilterComponent({ filterCallback, setSearchWidth }: FilterComponentProp
     }
   };
 
+  useEffect(() => {
+    console.log('in use singleOption: ' + singleOption?.filterName);
+  }, [singleOption]);
+
   return (
     <div className="flex flex-col w-full justify-start sm:justify-end sm:items-end items-start">
       <div
@@ -253,6 +262,7 @@ function FilterComponent({ filterCallback, setSearchWidth }: FilterComponentProp
                 options.find((option) => option.filterName.toLocaleLowerCase() === 'population')
                   ?.value as [number, number]
               }
+              shown={singleOption?.filterName.toLowerCase() === 'population' ? true : false}
             />
           </div>
         ) : (
@@ -263,15 +273,18 @@ function FilterComponent({ filterCallback, setSearchWidth }: FilterComponentProp
         {filterButtonShown && (
           <button
             type="button"
-            className="inline-flex w-32 h-[45px] right-0 top-0 rounded-md border border-gray-300 hover:border-lime-600 px-4 py-2 
-             dark:bg-slate-700 text-black shadow-black shadow-md bg-white text-sm font-medium  
-             hover:bg-gray-50 focus:outline-none focus:ring-2 dark:text-white  
-         focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+            className="inline-flex items-center w-32 h-[45px] right-0 top-0 rounded-md border border-gray-300 hover:border-lime-600 px-4 py-2 
+                  dark:bg-slate-700 text-black shadow-black shadow-md bg-white text-sm font-medium  
+                  hover:bg-gray-50 focus:outline-none focus:ring-2 dark:text-white  
+              focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
             id="menu-button"
             aria-expanded="true"
             aria-haspopup="true">
             Filters
-            <svg className="-mr-1 ml-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <svg
+              className="ml-11 mt-1 min-w-[20px] min-h-[20px]"
+              viewBox="0 0 20 20"
+              fill="currentColor">
               <path
                 fillRule="evenodd"
                 d="M10 12a1 1 0 01-.707-.293l-4-4a1 1 0 111.414-1.414L10 9.586l3.293-3.293a1 1 0 111.414 1.414l-4 4A1 1 0 0110 12z"

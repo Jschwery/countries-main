@@ -2,7 +2,7 @@
 
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { usePathname, useRouter } from 'next/navigation';
-import { Suspense, useState, useTransition } from 'react';
+import { Suspense, useEffect, useState, useTransition } from 'react';
 import { countryData } from '@public/countryData';
 import CountryLink from '../countryLink';
 import Image from 'next/image';
@@ -14,8 +14,8 @@ export default function Search({ disabled }: { disabled?: boolean }) {
   const [isPending, startTransition] = useTransition();
   const [phrase, setPhrase] = useState('');
   const [phraseCopy, setPhraseCopy] = useState('');
-
-  /*just make it a dropdown from clicking a button*/
+  const router = useRouter();
+  /*make it a dropdown from clicking a button*/
   function handleSearch(term: string) {
     setPhrase(term);
     setPhraseCopy(term);
@@ -30,6 +30,17 @@ export default function Search({ disabled }: { disabled?: boolean }) {
       replace(`${pathname}?${params.toString()}`);
     });
   }
+
+  const handleCountryListClick = (countryName: string) => {
+    const country = countryData.find(
+      (country) => country.name.toLowerCase() === countryName.toLowerCase()
+    );
+
+    if (country) {
+      const countryUrl = `/${country.name.trim().split(' ').join('+')}`;
+      router.push(countryUrl);
+    }
+  };
 
   function clearStates() {
     setPhrase('');
@@ -68,20 +79,22 @@ export default function Search({ disabled }: { disabled?: boolean }) {
                 })
                 .map((c, iteration) => {
                   return (
-                    <CountryLink key={c.name + '-' + iteration} href={`/${c.name}`}>
-                      <li className="hover:bg-slate-700 hover:opacity-60 p-2 leading-4 text-lg cursor-pointer h-[45px] flex align-baseline">
-                        <Image
-                          alt="flag"
-                          width={48}
-                          height={35}
-                          className="  rounded-md px-1"
-                          src={`${c.flags.png || c.flags.svg}`}
-                        />
-                        <div className="truncate self-center">
-                          {c.name.length > 15 ? `${c.name.trim().slice(0, 20)}...` : `${c.name}`}
-                        </div>
-                      </li>
-                    </CountryLink>
+                    <li
+                      key={c.name + '-' + iteration}
+                      onClick={() => handleCountryListClick(c.name)}
+                      className="hover:bg-slate-700 hover:opacity-60 p-2 leading-[24px] text-lg cursor-pointer h-[45px] flex align-baseline">
+                      <Image
+                        alt="flag"
+                        width={48}
+                        height={35}
+                        className="rounded-md px-1"
+                        src={`${c.flags.png || c.flags.svg}`}
+                      />
+
+                      <h5 title={c.name} className="truncate self-center">
+                        {c.name.length > 15 ? `${c.name.trim().slice(0, 20)}...` : `${c.name}`}
+                      </h5>
+                    </li>
                   );
                 })}
             </ul>

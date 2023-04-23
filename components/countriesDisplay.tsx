@@ -3,9 +3,12 @@ import CountryLink from '@components/countryLink';
 import FilterComponent, { FilterOptions } from '@components/filters/filterComponent';
 import TablePaginationDemo from '@components/filters/paginate';
 import SearchBar from '@components/filters/searchBar';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Country } from '../app/page';
 import Image from 'next/image';
+import { InformationCircleIcon } from '@heroicons/react/24/outline';
+import { countryData } from '@public/countryData';
+import FilteredCount from './filteredCount';
 
 export function fltrObjectAndIndex(filterName: string, filterOptions: FilterOptions[]) {
   const indexToUpdate = filterOptions.findIndex(
@@ -23,42 +26,31 @@ export function fltrObjectAndIndex(filterName: string, filterOptions: FilterOpti
 }
 
 function CountriesDisplay({ countries }: { countries: Country[] }) {
-  console.log('the countries display is from CountriesDisplay Prop ' + countries.length);
-
   const [filteredCountries, setFilteredCountries] = useState<Country[]>(countries);
   const [searchWidth, setSearchWidth] = useState(false);
+  const [noFilterMatch, setNoFilterMatch] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<FilterOptions[]>([]);
 
-  useEffect(() => {
-    console.log('the countries length is: ' + countries.length);
-
-    setFilteredCountries(countries);
-  }, [countries]);
-
-  useEffect(() => {
-    console.log('the filtered countries length is: ' + filteredCountries.length);
-  }, [filteredCountries]);
-
-  const filterCallback = (filterOptions: FilterOptions[]) => {
-    console.log('within the COUNTRY DISPLAY FILTER CALLBACK IMPORTANT!!!!!!!!!!!!!!!!!!!!!!');
-    filterOptions.forEach((op) => console.log(op.filterName + ' is it active?: ' + op.active));
-
-    if (filterOptions.some((option) => option.active)) {
-      const countriesFiltered = filteredCountries.filter((country) => {
+  const applyFilters = (countries: Country[], filterOptions: FilterOptions[]) => {
+    return (
+      countries &&
+      countries.filter((country) => {
         return filterOptions.every((filter) => {
           switch (filter.filterName.toLocaleLowerCase()) {
             case 'region':
               return (
                 filter.value &&
-                typeof filter.value === 'object' &&
-                (filter.value as string[]).includes(country?.region || '')
+                (filter.value as string[]).some(
+                  (region) => region.toLowerCase() === (country?.region || '').toLowerCase()
+                )
               );
             case 'borders':
               return (
                 country.borders &&
-                country.borders.every((border) =>
-                  (filter.value as string[]).some(
-                    (filterValue) => filterValue.toLowerCase() === border.toLowerCase()
-                  )
+                (filter.value as string[]).every(
+                  (value) =>
+                    country.borders &&
+                    country.borders.some((border) => value.toLowerCase() === border.toLowerCase())
                 )
               );
             case 'population':
@@ -71,22 +63,36 @@ function CountriesDisplay({ countries }: { countries: Country[] }) {
               return true;
           }
         });
-      });
-      setFilteredCountries(countriesFiltered);
-    } else {
-      setFilteredCountries(countries);
-    }
+      })
+    );
   };
+  useEffect(() => {
+    const filtered = applyFilters(countries, activeFilters);
+    activeFilters.length > 0 ? setFilteredCountries(filtered) : setFilteredCountries(countries);
+  }, [countries, activeFilters]);
+
+  const filterCallback = useCallback(
+    (filterOptions: FilterOptions[]) => {
+      setActiveFilters(filterOptions);
+      const filtered = applyFilters(countries, filterOptions);
+      setFilteredCountries(filtered);
+      filterOptions.forEach((filter) => console.log(filter));
+    },
+    [countries]
+  );
+
+  useEffect(() => {
+    console.log('filtermatch: ' + noFilterMatch);
+  }, [noFilterMatch]);
 
   const handleSetSearchWidth = (setWidth: boolean) => {
     setWidth ? setSearchWidth(!searchWidth) : setSearchWidth(false);
   };
-
   return (
     <div>
       <div className="w-full flex flex-wrap pt-5">
         <div className="w-[90%] flex mx-auto flex-wrap changeCol mb-2">
-          <div className="w-[50%] min-w-[200px]">
+          <div className="w-[50%] flex-grow flex-shrink min-w-[200px]">
             <div
               className={`flex flex-col items-start md:items-baseline justify-center h-full mt-2 ${
                 searchWidth ? 'ml-[28px] md:ml-0' : ''
@@ -95,16 +101,38 @@ function CountriesDisplay({ countries }: { countries: Country[] }) {
             </div>
           </div>
 
-          <div className="w-[50%] min-w-[250px] flex items-start md:items-end">
+          <div className="w-[50%] flex-grow flex-shrink min-w-[250px] flex items-start md:items-end">
             <FilterComponent
               filterCallback={filterCallback}
               setSearchWidth={handleSetSearchWidth}
             />
           </div>
+
+          {filteredCountries.length > 0 && filteredCountries.length !== 250 && (
+            <div
+              className={`items-start md:items-baseline justify-center ${
+                searchWidth ? 'ml-[28px] md:ml-0' : ''
+              }`}>
+              <FilteredCount countries={filteredCountries} />
+            </div>
+          )}
         </div>
+        {filteredCountries.length === 0 &&
+          !activeFilters.some(
+            (filter) => filter.filterName.toLowerCase() === 'region' && activeFilters.length === 1
+          ) && (
+            <div
+              className={`w-full items-start md:items-baseline justify-center ${
+                searchWidth ? 'ml-[28px] md:ml-0' : ''
+              }`}>
+              <InformationCircleIcon className="text-yellow-300  max-w-[35px] max-h-[35px] ml-[2.45rem]" />
+            </div>
+          )}
+
         <div className="w-full flex justify-center pt-4 sm:pt-0 align-middle">
           {/* <TablePaginationDemo resultCount={countries.length} /> */}
         </div>
+
         {filteredCountries.map((country, index) => (
           <div key={`${country.name.common}-${index}`} className="flex mx-auto card-center">
             <CountryLink href={`/${country.name.common.trim().split(' ').join('+')}`}>
@@ -121,23 +149,26 @@ function CountriesDisplay({ countries }: { countries: Country[] }) {
                   />
                 </div>
                 <div className="h-1/2 flex flex-col justify-center flex-auto">
-                  <h5 className="text-start pl-4 py-1 text-sm mb-1 leading-3 text-white sm:text-lg">
+                  <h5
+                    className="text-start underline pl-4 mt-3 font-bold text-sm leading-[18px] text-white sm:text-lg"
+                    title={country.name.common}>
                     {country.name.common.length > 20
                       ? `${country.name.common.slice(0, 20)}...`
                       : `${country.name.common}`}
                   </h5>
-                  <ul className="country-info text-start pl-4">
+
+                  <ul className="country-info text-start pl-4 flex flex-col justify-around h-full w-full p-1">
                     <li className="">
-                      <span>Population:</span>
+                      <span>Population: </span>
                       {country.population}
                     </li>
                     <li>
-                      <span>Region:</span>
+                      <span>Region: </span>
                       {country.region}
                     </li>
                     <li>
                       <span>Capital: </span>
-                      {country.capital}
+                      {country.capital ?? 'N/A'}
                     </li>
                   </ul>
                 </div>
@@ -149,5 +180,4 @@ function CountriesDisplay({ countries }: { countries: Country[] }) {
     </div>
   );
 }
-
 export default CountriesDisplay;
