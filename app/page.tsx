@@ -8,37 +8,8 @@ import TablePaginationDemo from '@components/filters/paginate';
 import { getCountries } from '@components/helpers/fetchcountries';
 import Image from 'next/image';
 import CountriesDisplay from '@components/countriesDisplay';
-
-type Props = {
-  props?: {
-    countryName?: string;
-    countryRegion?: string;
-    paginate?: number;
-    borders?: string[];
-    currency?: string[];
-  };
-  searchParams?: {
-    q?: string;
-  };
-};
-export interface Country {
-  name: {
-    common: string;
-  };
-  region?: string;
-  borders?: string[];
-  population?: number;
-  flags?: {
-    png: string;
-    svg: string;
-  };
-  capital?: string[];
-  languages?: { [key: string]: string };
-  maps?: {
-    googleMaps?: string;
-  };
-  cca3?: string;
-}
+import { Props } from '@global/types';
+import { Country } from '@global/interfaces';
 
 const HomePage = async ({ searchParams }: Props) => {
   //check if there is both query and props,
@@ -72,11 +43,12 @@ const HomePage = async ({ searchParams }: Props) => {
   const countriesFetched: Country[] = await getCountries();
   const countriesFiltered: Country[] = filterCheckAndApply(searchParams?.q, countriesFetched);
 
-  console.log('filtered: ' + countriesFiltered.length);
-
   return (
     <>
-      <CountriesDisplay countries={countriesFiltered} />
+      <CountriesDisplay
+        searchParams={searchParams?.q ? true : false}
+        countries={countriesFiltered}
+      />
     </>
   );
 };
