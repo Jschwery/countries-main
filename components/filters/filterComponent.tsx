@@ -9,13 +9,7 @@ import { PencilIcon } from '@heroicons/react/24/outline';
 import flterObjectAndIndex, { fltrObjectAndIndex } from '../countriesDisplay';
 import { PaginateType } from './paginate';
 import PopulationsUpdate from './populationsUpdate';
-
-export interface FilterOptions {
-  filterName: string;
-  value: [number, number] | string[] | PaginateType;
-  active?: boolean;
-  filterEdit?: boolean;
-}
+import { FilterOptions } from '@global/interfaces';
 
 type FilterComponentProps = {
   filterCallback: (filterOptions: FilterOptions[]) => void;
@@ -247,7 +241,7 @@ function FilterComponent({ filterCallback, setSearchWidth }: FilterComponentProp
   }, [singleOption]);
 
   return (
-    <div className="flex flex-col w-full justify-start sm:justify-end sm:items-end items-start">
+    <div className="flex w-full flex-col justify-start sm:justify-end sm:items-end items-start">
       <div
         className={`w-[300px] py-2 pl-2 flex flex-col items-end transition-opacity transition-max-height duration-400 overflow-hidden ${
           !filterButtonShown ? 'opacity-100 max-h-[1000px]' : 'opacity-0 max-h-0'

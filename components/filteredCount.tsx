@@ -1,4 +1,4 @@
-import { Country } from '@app/page';
+import { Country } from '@global/interfaces';
 import React from 'react';
 
 function FilteredCount({ countries }: { countries: Country[] }) {

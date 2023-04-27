@@ -1,7 +1,7 @@
 'use client';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { fetchCountries } from '@components/helpers/countryFetch';
-import { Country } from '@app/page';
+import { Country } from '@global/interfaces';
 import { IconButton, Tooltip } from '@mui/material';
 import continents from '@public/continents.json';
 interface CountriesFetched {

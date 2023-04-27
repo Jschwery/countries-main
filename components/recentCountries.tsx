@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { fetchCountries } from './helpers/countryFetch';
-import { Country } from '@app/page';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { useGlobalContext } from '@global/provider';

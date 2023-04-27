@@ -1,10 +1,11 @@
 'use client';
 import CountryLink from '@components/countryLink';
-import FilterComponent, { FilterOptions } from '@components/filters/filterComponent';
+import FilterComponent from '@components/filters/filterComponent';
+import { FilterOptions } from '@global/interfaces';
 import TablePaginationDemo from '@components/filters/paginate';
 import SearchBar from '@components/filters/searchBar';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Country } from '../app/page';
+import { Country } from '@global/interfaces';
 import Image from 'next/image';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import { countryData } from '@public/countryData';
@@ -25,7 +26,13 @@ export function fltrObjectAndIndex(filterName: string, filterOptions: FilterOpti
   };
 }
 
-function CountriesDisplay({ countries }: { countries: Country[] }) {
+function CountriesDisplay({
+  countries,
+  searchParams
+}: {
+  countries: Country[];
+  searchParams: boolean;
+}) {
   const [filteredCountries, setFilteredCountries] = useState<Country[]>(countries);
   const [searchWidth, setSearchWidth] = useState(false);
   const [noFilterMatch, setNoFilterMatch] = useState(false);
@@ -66,6 +73,11 @@ function CountriesDisplay({ countries }: { countries: Country[] }) {
       })
     );
   };
+
+  useEffect(() => {
+    console.log('there are search params: ' + searchParams);
+  }, [searchParams]);
+
   useEffect(() => {
     const filtered = applyFilters(countries, activeFilters);
     activeFilters.length > 0 ? setFilteredCountries(filtered) : setFilteredCountries(countries);
@@ -76,14 +88,13 @@ function CountriesDisplay({ countries }: { countries: Country[] }) {
       setActiveFilters(filterOptions);
       const filtered = applyFilters(countries, filterOptions);
       setFilteredCountries(filtered);
-      filterOptions.forEach((filter) => console.log(filter));
     },
     [countries]
   );
 
   useEffect(() => {
-    console.log('filtermatch: ' + noFilterMatch);
-  }, [noFilterMatch]);
+    console.log('filtered countries length: ' + filteredCountries.length);
+  }, [filteredCountries]);
 
   const handleSetSearchWidth = (setWidth: boolean) => {
     setWidth ? setSearchWidth(!searchWidth) : setSearchWidth(false);
@@ -91,7 +102,7 @@ function CountriesDisplay({ countries }: { countries: Country[] }) {
   return (
     <div>
       <div className="w-full flex flex-wrap pt-5">
-        <div className="w-[90%] flex mx-auto flex-wrap changeCol mb-2">
+        <div className="w-[90%] flex-col sm:flex-row flex-wrap sm:flex mx-auto mb-2">
           <div className="w-[50%] flex-grow flex-shrink min-w-[200px]">
             <div
               className={`flex flex-col items-start md:items-baseline justify-center h-full mt-2 ${
@@ -101,7 +112,7 @@ function CountriesDisplay({ countries }: { countries: Country[] }) {
             </div>
           </div>
 
-          <div className="w-[50%] flex-grow flex-shrink min-w-[250px] flex items-start md:items-end">
+          <div className="w-[50%] flex-grow flex-shrink min-w-[250px] flex">
             <FilterComponent
               filterCallback={filterCallback}
               setSearchWidth={handleSetSearchWidth}
@@ -116,29 +127,27 @@ function CountriesDisplay({ countries }: { countries: Country[] }) {
               <FilteredCount countries={filteredCountries} />
             </div>
           )}
-        </div>
-        {filteredCountries.length === 0 &&
-          !activeFilters.some(
-            (filter) => filter.filterName.toLowerCase() === 'region' && activeFilters.length === 1
-          ) && (
+          {filteredCountries.length === 0 && (
             <div
-              className={`w-full items-start md:items-baseline justify-center ${
+              className={`w-[55%] flex items-center border-2 min-w-[215px] max-w-[216px] border-sky-300 rounded justify-center ${
                 searchWidth ? 'ml-[28px] md:ml-0' : ''
               }`}>
-              <InformationCircleIcon className="text-yellow-300  max-w-[35px] max-h-[35px] ml-[2.45rem]" />
+              <InformationCircleIcon className="text-yellow-300 min-w-[30px] mr-1 min-hs-[30px] max-w-[35px] max-h-[35px]" />
+              <span className="pl-1 leading-5 py-1">No countries found with selected filters</span>
             </div>
           )}
-
-        <div className="w-full flex justify-center pt-4 sm:pt-0 align-middle">
-          {/* <TablePaginationDemo resultCount={countries.length} /> */}
         </div>
-
+      </div>
+      {/* <div className="w-full flex justify-center pt-4 sm:pt-0 align-middle">
+          <TablePaginationDemo resultCount={countries.length} />
+        </div> */}
+      <div className="flex flex-wrap items-center justify-center">
         {filteredCountries.map((country, index) => (
-          <div key={`${country.name.common}-${index}`} className="flex mx-auto card-center">
+          <div key={`${country.name.common}-${index}`} className="flex justify-center items-center">
             <CountryLink href={`/${country.name.common.trim().split(' ').join('+')}`}>
               <div
-                className="country flex w-56 h-64 flex-col bg-slate-600 
-          rounded-md shadow-md shadow-black m-4 cursor-pointer cards-sm">
+                className="country flex w-56 h-56 flex-col bg-slate-600 
+          rounded-md shadow-md shadow-black m-4 cursor-pointer">
                 <div className="h-1/2 bg-gray-600 flex justify-center items-center rounded-md flex-auto">
                   <Image
                     className="object-cover w-full h-full rounded-md"

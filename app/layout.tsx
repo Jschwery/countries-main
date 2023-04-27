@@ -1,11 +1,11 @@
-import "../styles/globals.css";
-import Header from "@components/header";
-import { Provider } from "react-redux";
-import ThemeProviders from "@components/providers";
-import Providers from "@components/providers";
+import '../styles/globals.css';
+import Header from '@components/header';
+import { Provider } from 'react-redux';
+import ThemeProviders from '@components/providers';
+import Providers from '@components/providers';
 
 export default function RootLayout({
-  children,
+  children
 }: {
   children: React.ReactNode;
 }): React.ReactElement {
